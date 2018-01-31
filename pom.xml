@@ -19,19 +19,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.framework.boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-core</artifactId>
-            <version>${dropwizard.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.11</artifactId>
+            <version>0.10.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -54,9 +54,6 @@
                     <archive>
                         <addMavenDescriptor>true</addMavenDescriptor>
                     </archive>
-                    <excludes>
-                        <exclude>**/log4j.properties</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -71,9 +68,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly-magpie.xml</descriptor>
-                    </descriptors>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
             <plugin>
@@ -81,8 +78,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.2</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <encoding>utf-8</encoding>
                 </configuration>
             </plugin>
