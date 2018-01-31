@@ -22,7 +22,7 @@ public class KafkaMetadataExecutor {
     private static final int SESSION_TIMEOUT = 30_000;
     private static final int CONNECTION_TIMEOUT = 30_000;
 
-    private static SecurityProtocol protocol = SecurityProtocol.PLAINTEXT;
+    private static SecurityProtocol protocol = SecurityProtocol.PLAINTEXT; // todo maybe always PLAINTEXT can get the metadata
 
     public static void main(String[] args) {
         if (args.length >= 3)
