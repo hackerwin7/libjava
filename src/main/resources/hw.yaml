@@ -1,0 +1,12 @@
+template: Hello, %s!
+defaultName: Stranger
+co.kk.y: 123
+
+server:
+  rootPath: /hw/*
+  applicationConnectors:
+    - type: http
+      port: 8919
+  adminConnectors:
+    - type: http
+      port: 8918
