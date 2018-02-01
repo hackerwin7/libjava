@@ -42,15 +42,18 @@ public class KafkaMetadataExecutor {
     }
 
     public static Map getPartitionSingleBrokerInfo(String zkUrl, String topic) {
-        Map<Integer, String> info = new HashMap<>();
+        Map<Integer, List<String>> info = new HashMap<>();
         ZkUtils zkUtils = ZkUtils.apply(zkUrl, SESSION_TIMEOUT, CONNECTION_TIMEOUT, JaasUtils.isZkSecurityEnabled());
         Seq<String> topics = scala.collection.JavaConversions.asScalaBuffer(Arrays.asList(topic));
         Map<Object, Seq<Object>> jmap = scala.collection.JavaConversions.mapAsJavaMap(zkUtils.getPartitionAssignmentForTopics(topics).apply(topic));
         for(Map.Entry<Object, Seq<Object>> entry : jmap.entrySet()) {
             int pid = (int) entry.getKey();
-            int bid = (int) (scala.collection.JavaConversions.seqAsJavaList(entry.getValue()).get(0));
-            String broker = zkUtils.getBrokerInfo(bid).get().getNode(ListenerName.forSecurityProtocol(protocol)).host();
-            info.put(pid, broker);
+            List<Object> bids = scala.collection.JavaConversions.seqAsJavaList(entry.getValue());
+            List<String> brokers = new ArrayList<>();
+            for(Object bid : bids) {
+                brokers.add(zkUtils.getBrokerInfo((int) bid).get().getNode(ListenerName.forSecurityProtocol(protocol)).host());
+            }
+            info.put(pid, brokers);
         }
         zkUtils.close();
         return info;
