@@ -24,10 +24,11 @@ public class KafkaProduceConsumeExecutor {
     private static final Long MAX_SEND = 1000000L;
 
     public static void main(String[] args) throws Exception {
-        if(args.length < 2) {
-            args = new String[2];
+        if(args.length < 3) {
+            args = new String[3];
             args[0] = "localhost:9092";
             args[1] = "kafka-monitor-topic-metrics";
+            args[2] = "test";
         }
 
         KafkaProduceConsumeExecutor executor = new KafkaProduceConsumeExecutor();
@@ -38,7 +39,7 @@ public class KafkaProduceConsumeExecutor {
 
         LOG.info("consuming...");
 //        executor.consume(args[0], args[1]);
-        executor.consume_start(args[0], args[1]);
+        executor.consume_start(args[0], args[1], args[2]);
     }
 
     public void produce_start(final String brokers, final String topic) throws Exception {
@@ -88,12 +89,12 @@ public class KafkaProduceConsumeExecutor {
         producer.close();
     }
 
-    public void consume_start(final String broker, final String topic) throws Exception {
+    public void consume_start(final String broker, final String topic, final String clientid) throws Exception {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    consume(broker, topic);
+                    consume(broker, clientid ,topic);
                 } catch (Exception e) {
                     LOG.error("exception: " + e.getMessage(), e);
                 }
@@ -101,7 +102,7 @@ public class KafkaProduceConsumeExecutor {
         }).start();
     }
 
-    public void consume(String brokers, String... topics) throws Exception {
+    public void consume(String brokers, String clientid, String... topics) throws Exception {
         Properties props = new Properties();
         props.put("bootstrap.servers", brokers);
         props.put("group.id", "test");
@@ -109,6 +110,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("auto.commit.interval.ms", "1000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("client.id", clientid);
 //        props.put("security.protocol", "SASL_PLAINTEXT");
 //        props.put("sasl.kerberos.service.name", "kafka");
 
