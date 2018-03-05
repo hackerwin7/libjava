@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
  */
 public class JDKTest {
     public static void main(String[] args) throws Exception {
-        threadReuse();
+        splitTest();
     }
 
     private static void ceilTest() {
@@ -77,5 +77,12 @@ public class JDKTest {
             System.out.println("restart");
             thread.start();
         }
+    }
+
+    private static void splitTest() {
+        String s = "111:1,222:2,3:333";
+        String s1 = "444";
+        System.out.println(s.split(":")[0]);
+        System.out.println(s1.split(":")[0]);
     }
 }
