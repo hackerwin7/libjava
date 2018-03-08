@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
  */
 public class JDKTest {
     public static void main(String[] args) throws Exception {
-        splitTest();
+        strFormatTest();
     }
 
     private static void ceilTest() {
@@ -84,5 +84,14 @@ public class JDKTest {
         String s1 = "444";
         System.out.println(s.split(":")[0]);
         System.out.println(s1.split(":")[0]);
+    }
+
+    private static void strFormatTest() {
+        String original = String.format("%1$-" + 10 + "s", "");
+        String current = original.replace(' ', 'x');
+        System.out.println("val = " + original + "#EOF");
+        System.out.println("val = " + current + "#EOF");
+        System.out.println(current.length());
+        System.out.println(current.getBytes().length);
     }
 }
