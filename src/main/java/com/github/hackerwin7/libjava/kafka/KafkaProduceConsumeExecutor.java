@@ -33,21 +33,21 @@ public class KafkaProduceConsumeExecutor {
 
         KafkaProduceConsumeExecutor executor = new KafkaProduceConsumeExecutor();
 
-//        LOG.info("producing...");
-//        //executor.produce(args[0], args[1]);
-//        executor.produce_start(args[0], args[1]);
+        LOG.info("producing...1111111111");
+        //executor.produce(args[0], args[1]);
+        executor.produce_start(args[0], args[1], args[2]);
 
         LOG.info("consuming...");
 //        executor.consume(args[0], args[1]);
-        executor.consume_start(args[0], args[1], args[2]);
+        executor.consume_start(args[0], args[1], args[2], args[3]);
     }
 
-    public void produce_start(final String brokers, final String topic) throws Exception {
+    public void produce_start(final String brokers, final String topic, final String clientId) throws Exception {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    produce(brokers, topic);
+                    produce(brokers, clientId, topic);
                 } catch (Exception e) {
                     LOG.error("run exception: " + e.getMessage(), e);
                 }
@@ -55,7 +55,7 @@ public class KafkaProduceConsumeExecutor {
         }).start();
     }
 
-    public void produce(String brokers, String topic) throws Exception {
+    public void produce(String brokers, String clientId, String topic) throws Exception {
         Properties props = new Properties();
         props.put("bootstrap.servers", brokers);
         props.put("acks", "all");
@@ -65,6 +65,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("buffer.memory", 33554432);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("client.id", clientId);
 //        props.put("security.protocol", "SASL_PLAINTEXT");
 //        props.put("sasl.kerberos.service.name", "kafka");
 
@@ -73,6 +74,7 @@ public class KafkaProduceConsumeExecutor {
         while (i <= MAX_SEND) {
             long cur = System.currentTimeMillis();
             try {
+                LOG.info("sending " + new ProducerRecord<String, String>(topic, "key-" + i + "-" + cur, "msg-" + i + "-" + cur).toString());
                 producer.send(new ProducerRecord<String, String>(topic, "key-" + i + "-" + cur, "msg-" + i + "-" + cur), new Callback() {
                     @Override
                     public void onCompletion(RecordMetadata metadata, Exception exception) {
@@ -89,12 +91,12 @@ public class KafkaProduceConsumeExecutor {
         producer.close();
     }
 
-    public void consume_start(final String broker, final String topic, final String clientid) throws Exception {
+    public void consume_start(final String broker, final String topic, final String clientid, final String groupId) throws Exception {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    consume(broker, clientid ,topic);
+                    consume(broker, clientid, groupId ,topic);
                 } catch (Exception e) {
                     LOG.error("exception: " + e.getMessage(), e);
                 }
@@ -102,10 +104,10 @@ public class KafkaProduceConsumeExecutor {
         }).start();
     }
 
-    public void consume(String brokers, String clientid, String... topics) throws Exception {
+    public void consume(String brokers, String clientid, String groupId, String... topics) throws Exception {
         Properties props = new Properties();
         props.put("bootstrap.servers", brokers);
-        props.put("group.id", "test");
+        props.put("group.id", groupId);
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");

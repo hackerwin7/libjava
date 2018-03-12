@@ -6,7 +6,7 @@
 
     <groupId>com.github.hackerwin7</groupId>
     <artifactId>libjava</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT-unAuth</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
