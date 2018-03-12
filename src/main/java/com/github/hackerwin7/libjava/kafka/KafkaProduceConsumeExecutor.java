@@ -66,8 +66,8 @@ public class KafkaProduceConsumeExecutor {
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("client.id", clientId);
-//        props.put("security.protocol", "SASL_PLAINTEXT");
-//        props.put("sasl.kerberos.service.name", "kafka");
+        props.put("security.protocol", "SASL_PLAINTEXT");
+        props.put("sasl.kerberos.service.name", "kafka");
 
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         long i = 0;
@@ -113,8 +113,8 @@ public class KafkaProduceConsumeExecutor {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("client.id", clientid);
-//        props.put("security.protocol", "SASL_PLAINTEXT");
-//        props.put("sasl.kerberos.service.name", "kafka");
+        props.put("security.protocol", "SASL_PLAINTEXT");
+        props.put("sasl.kerberos.service.name", "kafka");
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
         consumer.subscribe(Arrays.asList(topics));
