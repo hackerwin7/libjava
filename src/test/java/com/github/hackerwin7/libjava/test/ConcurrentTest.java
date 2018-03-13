@@ -3,6 +3,7 @@ package com.github.hackerwin7.libjava.test;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -13,7 +14,7 @@ public class ConcurrentTest {
     private static Object obj = new Object();
 
     public static void main(String[] args) throws Exception {
-        syncTest6();
+        barrierTest();
     }
 
     private static void syncTest() {
@@ -340,5 +341,118 @@ public class ConcurrentTest {
                 }
             }
         }).start();
+    }
+
+    public static void callableTest() {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Task task = new Task();
+        Future<Integer> result = executor.submit(task);
+        executor.shutdown();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("main threading");
+        try {
+            System.out.println("task return = " + result.get());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        System.out.println("ended.");
+    }
+
+    public static void callableTest1() {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Task task = new Task();
+        FutureTask<Integer> ft = new FutureTask<>(task);
+        executor.submit(ft);
+        executor.shutdown();
+
+//        Task task = new Task();
+//        FutureTask<Integer> ft = new FutureTask<>(task);
+//        Thread thread = new Thread(ft);
+//        thread.start();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("main threading");
+        try {
+            System.out.println("task return = " + ft.get());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        System.out.println("ended.");
+    }
+
+    public static void barrierTest() {
+        final CyclicBarrier cb = new CyclicBarrier(3, new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Ended.");
+            }
+        });
+        for (int i = 0; i < 3; i++) {
+            if (i == 0) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("t0 starting");
+                        try {
+                            cb.await(2000, TimeUnit.MILLISECONDS);
+                        } catch (Exception  e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("t0 ended");
+                    }
+                }).start();
+            } else if (i == 1){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("t1 starting");
+                        try {
+                            cb.await();
+                        } catch (Exception  e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("t1 ended");
+                    }
+                }).start();
+            } else {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("t1 starting");
+                        try {
+                            cb.await();
+                        } catch (Exception  e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("t1 ended");
+                    }
+                }).start();
+            }
+        }
+    }
+}
+
+class Task implements Callable<Integer> {
+    @Override
+    public Integer call() throws Exception {
+        System.out.println("sub-threading");
+        Thread.sleep(3000);
+        int sum = 0;
+        for (int i = 0; i < 100; i++)
+            sum += i;
+        return sum;
     }
 }
