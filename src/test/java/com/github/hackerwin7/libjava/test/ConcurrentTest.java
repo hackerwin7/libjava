@@ -14,7 +14,7 @@ public class ConcurrentTest {
     private static Object obj = new Object();
 
     public static void main(String[] args) throws Exception {
-        barrierTest();
+        printABTest();
     }
 
     private static void syncTest() {
@@ -443,6 +443,65 @@ public class ConcurrentTest {
             }
         }
     }
+
+    public static void printABTest() {
+        new Thread(new MyRunnable1()).start();
+        new Thread(new MyRunnable2()).start();
+    }
+
+    static class MyRunnable1 implements Runnable {
+        @Override
+        public void run() {
+            while (true) {
+                synchronized (obj) {
+                    if (flag) {
+                        try {
+                            System.out.println("1 waiting...");
+                            obj.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println('A');
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    flag = true;
+                    obj.notify();
+                }
+            }
+        }
+    }
+
+    static class MyRunnable2 implements Runnable {
+        @Override
+        public void run() {
+            while (true) {
+                synchronized (obj) {
+                    if (!flag) {
+                        try {
+                            System.out.println("2 waiting...");
+                            obj.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println('B');
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    flag = false;
+                    obj.notify();
+                }
+            }
+        }
+    }
+
+    static class A {}
 }
 
 class Task implements Callable<Integer> {
