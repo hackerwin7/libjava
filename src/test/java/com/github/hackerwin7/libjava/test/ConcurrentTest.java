@@ -15,7 +15,7 @@ public class ConcurrentTest {
     private static Object obj = new Object();
 
     public static void main(String[] args) throws Exception {
-        printABTest();
+        java8Syntax();
     }
 
     private static void syncTest() {
@@ -594,6 +594,19 @@ public class ConcurrentTest {
     }
 
     static class A {}
+
+    public static void java8Syntax() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.out.println("new syntax");
+            }
+        }).start();
+    }
 }
 
 class Task implements Callable<Integer> {
