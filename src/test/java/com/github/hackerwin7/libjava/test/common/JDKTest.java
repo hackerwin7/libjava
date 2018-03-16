@@ -1,4 +1,4 @@
-package com.github.hackerwin7.libjava.test;
+package com.github.hackerwin7.libjava.test.common;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
