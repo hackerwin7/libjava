@@ -1,6 +1,7 @@
 package com.github.hackerwin7.libjava.test;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.*;
@@ -14,7 +15,7 @@ public class ConcurrentTest {
     private static Object obj = new Object();
 
     public static void main(String[] args) throws Exception {
-        printABTest();
+        java8Syntax();
     }
 
     private static void syncTest() {
@@ -444,6 +445,97 @@ public class ConcurrentTest {
         }
     }
 
+    public static void countDownLatchTest() {
+        final CountDownLatch cdl = new CountDownLatch(2);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(Thread.currentThread().getName() + " starting");
+                try {
+                    cdl.await(2000, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName() + " end");
+            }
+        }, "t0").start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(Thread.currentThread().getName() + " starting");
+                try {
+                    Thread.sleep(1000);
+                    cdl.countDown();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName() + " end");
+            }
+        }, "t1").start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(Thread.currentThread().getName() + " starting");
+                try {
+                    Thread.sleep(5000);
+                    cdl.countDown();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName() + " end");
+            }
+        }, "t2").start();
+    }
+
+    public static void threadLocalTest() {
+        ThreadLocal<Integer> longLocal = new ThreadLocal<>();
+        ThreadLocal<String> stringLocal = new ThreadLocal<>();
+
+        Integer i = 123;
+        String str = "132";
+
+        try {
+            i = longLocal.get();
+            str = stringLocal.get();
+        } catch (Exception e) {
+            System.out.println("dddd");
+            e.printStackTrace();
+        }
+
+        System.out.println("str = " + str + ", i = " + i);
+    }
+
+    public static void threadReuseTest() throws Exception {
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("th");
+            }
+        });
+        th.start();
+        Thread.sleep(3000);
+        System.out.println(th.isAlive());
+        //th.start();
+        th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("thh");
+            }
+        });
+        th.start();
+    }
+
+    public static void executorsTest() {
+        //ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(10);
+        executor.schedule(new ScheduleTask("1"), 1, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(new ScheduleTask("2"), 0, 10, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(new ScheduleTask("3"), 0, 2, TimeUnit.SECONDS); // if task exceed period, the scheduler will have to retain the rate, the next task will immediate run after "timeout" task ended
+        executor.scheduleWithFixedDelay(new ScheduleTask("4"), 0, 1, TimeUnit.SECONDS);
+    }
     public static void printABTest() {
         new Thread(new MyRunnable1()).start();
         new Thread(new MyRunnable2()).start();
@@ -502,6 +594,19 @@ public class ConcurrentTest {
     }
 
     static class A {}
+
+    public static void java8Syntax() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.out.println("new syntax");
+            }
+        }).start();
+    }
 }
 
 class Task implements Callable<Integer> {
@@ -513,5 +618,19 @@ class Task implements Callable<Integer> {
         for (int i = 0; i < 100; i++)
             sum += i;
         return sum;
+    }
+}
+
+class ScheduleTask implements Runnable {
+    private String id;
+    public ScheduleTask(String id) {
+        this.id = id;
+    }
+    @Override
+    public void run() {
+        System.out.println(new Date() + ", " + id + " ...");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) { e.printStackTrace(); }
     }
 }
