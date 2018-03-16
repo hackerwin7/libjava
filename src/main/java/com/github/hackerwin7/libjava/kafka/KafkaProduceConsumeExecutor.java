@@ -1,14 +1,14 @@
 package com.github.hackerwin7.libjava.kafka;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,26 +20,58 @@ import java.util.Properties;
 public class KafkaProduceConsumeExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaProduceConsumeExecutor.class);
-
     private static final Long MAX_SEND = 1000000L;
 
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+    private final boolean enableProduce;
+    private final boolean enableConsume;
+    private final boolean enableAuth;
+
+    public KafkaProduceConsumeExecutor(boolean enableProduce, boolean enableConsume, boolean enableAuth) {
+        this.enableProduce = enableProduce;
+        this.enableConsume = enableConsume;
+        this.enableAuth = enableAuth;
+    }
+
+    public KafkaProduceConsumeExecutor() {
+        this(true, true, false);
+    }
+
     public static void main(String[] args) throws Exception {
-        if(args.length < 3) {
-            args = new String[3];
-            args[0] = "localhost:9092";
-            args[1] = "kafka-monitor-topic-metrics";
-            args[2] = "test";
+        String brokers = "localhost:9092", topic = "test", clientId = "", groupId = "";
+        boolean enableProduce = true, enableConsume = true, enableAuth = false;
+        switch (args.length) {
+            default:
+            case 7:
+                groupId = args[6];
+            case 6:
+                enableAuth = !StringUtils.equals(args[5], "0");
+            case 5:
+                enableConsume = !StringUtils.equals(args[4], "0");
+            case 4:
+                enableProduce = !StringUtils.equals(args[3], "0");
+            case 3:
+                clientId = args[2];
+            case 2:
+                topic = args[1];
+            case 1:
+                brokers = args[0];
+            case 0:
         }
+        KafkaProduceConsumeExecutor executor = new KafkaProduceConsumeExecutor(enableProduce, enableConsume, enableAuth);
+        executor.run(brokers, topic, clientId, groupId);
+    }
 
-        KafkaProduceConsumeExecutor executor = new KafkaProduceConsumeExecutor();
-
-        LOG.info("producing...1111111111");
-        //executor.produce(args[0], args[1]);
-        executor.produce_start(args[0], args[1], args[2]);
-
-        LOG.info("consuming...");
-//        executor.consume(args[0], args[1]);
-        executor.consume_start(args[0], args[1], args[2], args[3]);
+    public void run(String brokers, String topic, String clientId, String groupId) throws Exception {
+        if (enableProduce) {
+            LOG.info("producing...");
+            produce_start(brokers, topic, clientId);
+        }
+        if (enableConsume) {
+            LOG.info("consuming...");
+            consume_start(brokers, topic, clientId, groupId);
+        }
     }
 
     public void produce_start(final String brokers, final String topic, final String clientId) throws Exception {
@@ -47,7 +79,7 @@ public class KafkaProduceConsumeExecutor {
             @Override
             public void run() {
                 try {
-                    produce(brokers, clientId, topic);
+                    produce(brokers, topic, clientId);
                 } catch (Exception e) {
                     LOG.error("run exception: " + e.getMessage(), e);
                 }
@@ -55,7 +87,7 @@ public class KafkaProduceConsumeExecutor {
         }).start();
     }
 
-    public void produce(String brokers, String clientId, String topic) throws Exception {
+    public void produce(String brokers, String topic, String clientId) throws Exception {
         Properties props = new Properties();
         props.put("bootstrap.servers", brokers);
         props.put("acks", "all");
@@ -65,16 +97,18 @@ public class KafkaProduceConsumeExecutor {
         props.put("buffer.memory", 33554432);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("client.id", clientId);
-        props.put("security.protocol", "SASL_PLAINTEXT");
-        props.put("sasl.kerberos.service.name", "kafka");
+        props.put("client.id", StringUtils.isBlank(clientId) ? genId() : clientId);
+        if (enableAuth) {
+            props.put("security.protocol", "SASL_PLAINTEXT");
+            props.put("sasl.kerberos.service.name", "kafka");
+        }
 
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         long i = 0;
         while (i <= MAX_SEND) {
             long cur = System.currentTimeMillis();
             try {
-                LOG.info("sending " + new ProducerRecord<String, String>(topic, "key-" + i + "-" + cur, "msg-" + i + "-" + cur).toString());
+                LOG.info("Producing " + new ProducerRecord<String, String>(topic, "key-" + i + "-" + cur, "msg-" + i + "-" + cur).toString());
                 producer.send(new ProducerRecord<String, String>(topic, "key-" + i + "-" + cur, "msg-" + i + "-" + cur), new Callback() {
                     @Override
                     public void onCompletion(RecordMetadata metadata, Exception exception) {
@@ -96,7 +130,7 @@ public class KafkaProduceConsumeExecutor {
             @Override
             public void run() {
                 try {
-                    consume(broker, clientid, groupId ,topic);
+                    consume(broker ,topic, clientid, groupId);
                 } catch (Exception e) {
                     LOG.error("exception: " + e.getMessage(), e);
                 }
@@ -104,20 +138,22 @@ public class KafkaProduceConsumeExecutor {
         }).start();
     }
 
-    public void consume(String brokers, String clientid, String groupId, String... topics) throws Exception {
+    public void consume(String brokers, String topic, String clientid, String groupId) throws Exception {
         Properties props = new Properties();
         props.put("bootstrap.servers", brokers);
-        props.put("group.id", groupId);
+        props.put("group.id", StringUtils.isBlank(groupId) ? genId() : groupId); // if groupId empty, it will stay constant in one day
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("client.id", clientid);
-        props.put("security.protocol", "SASL_PLAINTEXT");
-        props.put("sasl.kerberos.service.name", "kafka");
+        props.put("client.id", StringUtils.isBlank(clientid) ? genId() : clientid);
+        if (enableAuth) {
+            props.put("security.protocol", "SASL_PLAINTEXT");
+            props.put("sasl.kerberos.service.name", "kafka");
+        }
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
-        consumer.subscribe(Arrays.asList(topics));
+        consumer.subscribe(Collections.singletonList(topic));
         consumer.poll(0); // assign topic partitions
         consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
         while (true) {
@@ -132,12 +168,16 @@ public class KafkaProduceConsumeExecutor {
                     }
                 else
                     for (ConsumerRecord<String, String> record : records) {
-                        LOG.info("topic = " + record.topic() + ", partition = "+ record.partition() +", offset = "+ record.offset() + ", timestamp = " + record.timestamp() +", key = "+ record.key() +", val = " + record.value());
+                        LOG.info("Consumed topic = " + record.topic() + ", partition = "+ record.partition() +", offset = "+ record.offset() + ", timestamp = " + record.timestamp() +", key = "+ record.key() +", val = " + record.value());
                         Thread.sleep(1000);
                     }
             } catch (Exception e) {
                 LOG.error(e.getMessage(), e);
             }
         }
+    }
+
+    private static String genId() {
+        return "kpc-" + sdf.format(new Date());
     }
 }
