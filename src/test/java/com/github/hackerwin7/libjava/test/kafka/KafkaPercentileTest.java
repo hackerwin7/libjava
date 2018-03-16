@@ -51,20 +51,24 @@ public class KafkaPercentileTest {
                 ps.record(i);
         }, 1, 1, TimeUnit.SECONDS);
 
-        final List<String> _metricsNames = Arrays.asList("tp:*:*");
-        executor.scheduleWithFixedDelay(() -> {
-                                            StringBuilder sb = new StringBuilder();
-                                            for (String metricName : _metricsNames) {
-                                                String mbeanExpr = metricName.substring(0, metricName.lastIndexOf(":"));
-                                                String attributeExpr = metricName.substring(metricName.lastIndexOf(":") + 1);
-                                                List<MbeanAttributeValue> attributeValues = getMBeanAttributeValues(mbeanExpr, attributeExpr);
-                                                for (MbeanAttributeValue attributeValue : attributeValues) {
-                                                    sb.append(attributeValue.toString() + "\n");
-                                                }
-                                            }
-                                            System.out.println(sb.toString());
+//        final List<String> _metricsNames = Arrays.asList("tp:*:*");
+//        executor.scheduleWithFixedDelay(
+//                () -> {
+//                    StringBuilder sb = new StringBuilder();
+//                    for (String metricName : _metricsNames) {
+//                        String mbeanExpr = metricName.substring(0, metricName.lastIndexOf(":"));
+//                        String attributeExpr = metricName.substring(metricName.lastIndexOf(":") + 1);
+//                        List<MbeanAttributeValue> attributeValues = getMBeanAttributeValues(mbeanExpr, attributeExpr);
+//                        for (MbeanAttributeValue attributeValue : attributeValues) {
+//                            sb.append(attributeValue.toString() + "\n");
+//                        }
+//                    }
+//                    System.out.println(sb.toString());
+//
+//                },
+//                0, 1, TimeUnit.SECONDS);
 
-            },
+        executor.scheduleWithFixedDelay(() -> System.out.println(metrics.metrics().get("tp").value()),
                                         0, 1, TimeUnit.SECONDS);
     }
 
@@ -73,10 +77,10 @@ public class KafkaPercentileTest {
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
         try {
             Set<ObjectName> mbeanNames = server.queryNames(new ObjectName(mbeanExpr), null);
-            for (ObjectName mbeanName: mbeanNames) {
+            for (ObjectName mbeanName : mbeanNames) {
                 MBeanInfo mBeanInfo = server.getMBeanInfo(mbeanName);
                 MBeanAttributeInfo[] attributeInfos = mBeanInfo.getAttributes();
-                for (MBeanAttributeInfo attributeInfo: attributeInfos) {
+                for (MBeanAttributeInfo attributeInfo : attributeInfos) {
                     if (attributeInfo.getName().equals(attributeExpr) || attributeExpr.length() == 0 || attributeExpr.equals("*")) {
                         double value = (Double) server.getAttribute(mbeanName, attributeInfo.getName());
                         values.add(new MbeanAttributeValue(mbeanName.getCanonicalName(), attributeInfo.getName(), value));
