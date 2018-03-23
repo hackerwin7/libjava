@@ -22,6 +22,3 @@ target/
 ### IDEA
 .idea/
 *.iml
-
-### Resource
-conf.properties

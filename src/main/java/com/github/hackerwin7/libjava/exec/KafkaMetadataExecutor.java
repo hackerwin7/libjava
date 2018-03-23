@@ -1,4 +1,4 @@
-package com.github.hackerwin7.libjava.kafka;
+package com.github.hackerwin7.libjava.exec;
 
 import kafka.admin.AdminUtils;
 import kafka.admin.BrokerMetadata;
