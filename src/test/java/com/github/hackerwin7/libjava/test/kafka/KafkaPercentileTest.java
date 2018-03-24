@@ -41,8 +41,8 @@ public class KafkaPercentileTest {
         int bucketNum = 5000 / 1 + 2;
         int sizeInBytes = 4 * bucketNum;
         ps.add(new com.github.hackerwin7.libjava.test.kafka.Percentiles(sizeInBytes, 5000, Percentiles.BucketSizing.CONSTANT,
-                                                                        new Percentile(new MetricName("t99", "tp", tags), 99.0),
-                                                                        new Percentile(new MetricName("t999", "tp", tags), 99.9)));
+                                                                        new Percentile(new MetricName("t99", "tp", "", tags), 99.0),
+                                                                        new Percentile(new MetricName("t999", "tp", "", tags), 99.9)));
 
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
