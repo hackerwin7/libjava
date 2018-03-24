@@ -2,6 +2,7 @@ package com.github.hackerwin7.libjava.test.common;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -16,9 +17,6 @@ import java.util.concurrent.TimeUnit;
  * Desc:
  */
 public class JDKTest {
-    public static void main(String[] args) throws Exception {
-        reflectionTest();
-    }
 
     private static void ceilTest() {
         System.out.println(Math.ceil(3 * 0.0000001));
@@ -198,6 +196,30 @@ public class JDKTest {
             e.printStackTrace();
         }
     }
+
+    private static void reflectionMethodTest() {
+        Class c = ReflectionTest.class;
+        String className = c.getName();
+
+        Method[] methods = c.getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            int mod = methods[i].getModifiers();
+            System.out.print(Modifier.toString(mod) + " ");
+            System.out.print(methods[i].getReturnType().getName());
+            System.out.print(" " + methods[i].getName() + "(");
+            Class[] parameterTypes = methods[i].getParameterTypes();
+            for (int j = 0; j < parameterTypes.length; j++) {
+                System.out.print(parameterTypes[j].getName());
+                if (parameterTypes.length > j + 1)
+                    System.out.print(", ");
+            }
+            System.out.println(")");
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        reflectionMethodTest();
+    }
 }
 
 class ReflectionTest {
@@ -232,8 +254,8 @@ class ReflectionTest {
 
     }
 
-    private void run(String cc) {
-
+    private int run(String cc) {
+        return 0;
     }
 }
 
