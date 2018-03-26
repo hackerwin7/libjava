@@ -1,8 +1,13 @@
 package com.github.hackerwin7.libjava.test.common;
 
+import sun.net.spi.nameservice.NameService;
+import sun.security.action.GetPropertyAction;
+
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.net.InetAddress;
+import java.security.AccessController;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class JDKTest {
     public static void main(String[] args) throws Exception {
-        reflectionTest();
+        getHostNameTest();
     }
 
     private static void ceilTest() {
@@ -198,6 +203,32 @@ public class JDKTest {
             e.printStackTrace();
         }
     }
+
+    private static void collectionTest() {
+        ArrayList<String> l1 = new ArrayList<>();
+        l1.add("1");l1.add("2");l1.add("3");
+        List<String> l2 = new ArrayList<>(l1);
+        List<String> l3 = (List<String>) l1.clone();
+        l1.add("4");l1.add("5");
+        l1.set(0, "11111");
+        System.out.println(l1 + " " + l2 + " " + l3);
+    }
+
+    private static void getHostNameTest() throws Exception {
+        InetAddress address = InetAddress.getByName("10.12.194.82");
+        System.out.println(address.toString());
+        System.out.println(address.getHostAddress());
+        System.out.println("----------- getHostname ----------------");
+        System.out.println(address.getHostName());System.out.println(address.getCanonicalHostName());
+        System.out.println(address.toString());
+        System.out.println(address.getCanonicalHostName());
+
+        System.out.println("------------------------");
+
+        InetAddress[] ias = InetAddress.getAllByName("ll");
+        for (InetAddress i : ias)
+            System.out.println(i.getHostAddress());
+    }
 }
 
 class ReflectionTest {
@@ -300,7 +331,7 @@ class Test2 {
 
     static int s = 1;
 
-    public Test2() {
+    Test2() {
         k = 111;
 
     }
