@@ -5,6 +5,7 @@ import sun.security.action.GetPropertyAction;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.security.AccessController;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
  * Desc:
  */
 public class JDKTest {
+
     public static void main(String[] args) throws Exception {
         getHostNameTest();
     }
@@ -204,6 +206,26 @@ public class JDKTest {
         }
     }
 
+    private static void reflectionMethodTest() {
+        Class c = ReflectionTest.class;
+        String className = c.getName();
+
+        Method[] methods = c.getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            int mod = methods[i].getModifiers();
+            System.out.print(Modifier.toString(mod) + " ");
+            System.out.print(methods[i].getReturnType().getName());
+            System.out.print(" " + methods[i].getName() + "(");
+            Class[] parameterTypes = methods[i].getParameterTypes();
+            for (int j = 0; j < parameterTypes.length; j++) {
+                System.out.print(parameterTypes[j].getName());
+                if (parameterTypes.length > j + 1)
+                    System.out.print(", ");
+            }
+            System.out.println(")");
+        }
+    }
+
     private static void collectionTest() {
         ArrayList<String> l1 = new ArrayList<>();
         l1.add("1");l1.add("2");l1.add("3");
@@ -263,8 +285,8 @@ class ReflectionTest {
 
     }
 
-    private void run(String cc) {
-
+    private int run(String cc) {
+        return 0;
     }
 }
 
