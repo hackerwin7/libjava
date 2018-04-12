@@ -14,7 +14,7 @@ public class ConcurrentTest {
     private static Object obj = new Object();
 
     public static void main(String[] args) throws Exception {
-        java8Syntax();
+        processor();
     }
 
     private static void syncTest() {
@@ -633,6 +633,10 @@ public class ConcurrentTest {
                 m1();
             } catch (InterruptedException e) { e.printStackTrace(); }
         }
+    }
+
+    static void processor() {
+        System.out.println(Runtime.getRuntime().availableProcessors());
     }
 }
 
