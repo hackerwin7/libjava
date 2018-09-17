@@ -14,8 +14,36 @@ import java.util.Map;
  * Desc:
  */
 public class JDKTest1 {
+
+    private enum CloseMode {
+        GRACEFUL(true),
+        NOTIFY_ONLY(true),
+        DISCARD_NO_NOTIFY(false);
+
+        boolean notifyDisconnect;
+
+        CloseMode(boolean notifyDisconnect) {
+            this.notifyDisconnect = notifyDisconnect;
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        test2();
+        testEnum();
+    }
+
+    public static void testEnum() {
+        CloseMode close1 = CloseMode.GRACEFUL;
+        CloseMode close2 = CloseMode.NOTIFY_ONLY;
+        CloseMode close3 = CloseMode.DISCARD_NO_NOTIFY;
+
+        System.out.println(close1 + "," + close2 + "," + close3);
+        if (close1.notifyDisconnect) {
+            // no op
+        }
+
+        System.out.println(close1 == close2);
+        System.out.println(close2 == close3);
+        System.out.println(close1.equals(close2));
     }
 
     public static void test1() throws Exception {
