@@ -105,10 +105,11 @@ public class KafkaProduceConsumeExecutor {
 
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         long i = 0;
+        Random rand = new Random();
         while (i <= MAX_SEND) {
             long cur = System.currentTimeMillis();
             try {
-                LOG.info("Producing " + new ProducerRecord<String, String>(topic, "key-" + i + "-" + cur, "msg-" + i + "-" + cur).toString());
+                LOG.info("Producing " + new ProducerRecord<String, String>(topic, rand.nextInt(5), "key-" + i + "-" + cur, "msg-" + i + "-" + cur).toString());
                 producer.send(new ProducerRecord<String, String>(topic, "key-" + i + "-" + cur, "msg-" + i + "-" + cur), new Callback() {
                     @Override
                     public void onCompletion(RecordMetadata metadata, Exception exception) {

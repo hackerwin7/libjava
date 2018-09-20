@@ -31,6 +31,10 @@ public class JDKTest1 {
         testEnum();
     }
 
+    public static void testNullInteger() {
+
+    }
+
     public static void testEnum() {
         CloseMode close1 = CloseMode.GRACEFUL;
         CloseMode close2 = CloseMode.NOTIFY_ONLY;
