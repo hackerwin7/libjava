@@ -1,6 +1,7 @@
 package com.github.hackerwin7.libjava.exec;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.TopicPartition;
@@ -98,6 +99,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("client.id", StringUtils.isBlank(clientId) ? genId() : clientId);
+//        props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 0);
         if (enableAuth) {
             props.put("security.protocol", "SASL_PLAINTEXT");
             props.put("sasl.kerberos.service.name", "kafka");
