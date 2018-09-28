@@ -100,6 +100,8 @@ public class KafkaProduceConsumeExecutor {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("client.id", StringUtils.isBlank(clientId) ? genId() : clientId);
 //        props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 0);
+        props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 600000);
+        props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 600000 + 1000);
         if (enableAuth) {
             props.put("security.protocol", "SASL_PLAINTEXT");
             props.put("sasl.kerberos.service.name", "kafka");
@@ -108,18 +110,33 @@ public class KafkaProduceConsumeExecutor {
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         long i = 0;
         Random rand = new Random();
+        int length = 20480;
         while (i <= MAX_SEND) {
+            int ilen = String.valueOf(i).length();
             long cur = System.currentTimeMillis();
             try {
-                ProducerRecord record = new ProducerRecord<String, String>(topic, "key-" + i + "-" + cur, "msg-" + i + "-" + cur);
+                ProducerRecord record = new ProducerRecord<String, String>(topic,
+                                                                           "key-" + i + "-" + cur,
+                                                                           StringUtils.repeat("*", length- ilen - 1) + "-" + i);
                 LOG.info("Producing " + record);
-                producer.send(record, new Callback() {
-                    @Override
-                    public void onCompletion(RecordMetadata metadata, Exception exception) {
-                        if (exception != null)
-                            LOG.error(exception.getMessage(), exception);
-                    }
-                });
+                // async
+//                producer.send(record, new Callback() {
+//                    @Override
+//                    public void onCompletion(RecordMetadata metadata, Exception exception) {
+//                        if (exception != null)
+//                            LOG.error("callback error: {}", exception.getMessage(), exception);
+//                    }
+//                });
+
+                // sync
+                producer.send(record,
+                              new Callback() {
+                                  @Override
+                                  public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                                      if (e != null)
+                                          LOG.error("callback error: {}", e.getMessage(), e);
+                                  }
+                              }).get();
             } catch (Exception e) {
                 LOG.error("exception: " + e.getMessage(), e);
             }
