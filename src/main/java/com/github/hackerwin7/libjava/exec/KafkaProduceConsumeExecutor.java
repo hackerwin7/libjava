@@ -129,14 +129,10 @@ public class KafkaProduceConsumeExecutor {
 //                });
 
                 // sync
-                producer.send(record,
-                              new Callback() {
-                                  @Override
-                                  public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-                                      if (e != null)
-                                          LOG.error("callback error: {}", e.getMessage(), e);
-                                  }
-                              }).get();
+                producer.send(record, ((metadata, exception) -> {
+                    if (exception != null)
+                        LOG.error("callback error: {}", exception.getMessage(), exception);
+                })).get();
             } catch (Exception e) {
                 LOG.error("exception: " + e.getMessage(), e);
             }
