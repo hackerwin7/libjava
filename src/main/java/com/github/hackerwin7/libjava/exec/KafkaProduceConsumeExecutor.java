@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.*;
 
 /**
@@ -170,13 +171,21 @@ public class KafkaProduceConsumeExecutor {
         }
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
-        consumer.subscribe(Collections.singletonList(topic));
-        consumer.poll(0); // assign topic partitions
+//        consumer.subscribe(Collections.singletonList(topic));
+        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
+        consumer.poll(Duration.ZERO); // assign topic partitions
         consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
+        int readCnt = 0;
         while (true) {
             try {
-                ConsumerRecords<String, String> records = consumer.poll(100);
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
                 LOG.info("==> " + records.count() + " records;");
+                readCnt += records.count();
+//                if (readCnt >= 10) {
+//                    consumer.pause(Arrays.asList(new TopicPartition("tt",
+//                                                                    0)));
+//                    LOG.info("paused topic tt for partition 0.");
+//                }
                 if(records.count() == 0)
                     try {
                         Thread.sleep(2000);
@@ -192,6 +201,7 @@ public class KafkaProduceConsumeExecutor {
                 LOG.error(e.getMessage(), e);
             }
         }
+//        consumer.close();
     }
 
     private static String genId() {
