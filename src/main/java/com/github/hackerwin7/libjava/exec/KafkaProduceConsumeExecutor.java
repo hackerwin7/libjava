@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by IntelliJ IDEA.
@@ -162,6 +163,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("group.id", StringUtils.isBlank(groupId) ? genId() : groupId); // if groupId empty, it will stay constant in one day
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "none");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("client.id", StringUtils.isBlank(clientid) ? genId() : clientid);
@@ -173,10 +175,11 @@ public class KafkaProduceConsumeExecutor {
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
 //        consumer.subscribe(Collections.singletonList(topic));
         consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
-        consumer.poll(Duration.ZERO); // assign topic partitions
-        consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
+        //consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
         int readCnt = 0;
-        while (true) {
+        final AtomicBoolean running = new AtomicBoolean(true);
+        LOG.info("list topics = " + consumer.listTopics());
+        while (running.get()) {
             try {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
                 LOG.info("==> " + records.count() + " records;");
@@ -201,7 +204,7 @@ public class KafkaProduceConsumeExecutor {
                 LOG.error(e.getMessage(), e);
             }
         }
-//        consumer.close();
+        consumer.close();
     }
 
     private static String genId() {

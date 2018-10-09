@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,7 +29,13 @@ public class JDKTest1 {
     }
 
     public static void main(String[] args) throws Exception {
-        testEnum();
+        testGetAndIncrement();
+    }
+
+    public static void testGetAndIncrement() {
+        AtomicLong al = new AtomicLong(1);
+        System.out.println(al.getAndIncrement());
+        System.out.println(al.get());
     }
 
     public static void testNullInteger() {
