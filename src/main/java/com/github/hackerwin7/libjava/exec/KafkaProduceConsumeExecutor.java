@@ -112,7 +112,7 @@ public class KafkaProduceConsumeExecutor {
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         long i = 0;
         Random rand = new Random();
-        int length = 51200;
+        int length = 64;
         while (i <= MAX_SEND) {
             int ilen = String.valueOf(i).length();
             long cur = System.currentTimeMillis();
@@ -163,10 +163,11 @@ public class KafkaProduceConsumeExecutor {
         props.put("group.id", StringUtils.isBlank(groupId) ? genId() : groupId); // if groupId empty, it will stay constant in one day
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "none");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("client.id", StringUtils.isBlank(clientid) ? genId() : clientid);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
         if (enableAuth) {
             props.put("security.protocol", "SASL_PLAINTEXT");
             props.put("sasl.kerberos.service.name", "kafka");
@@ -175,20 +176,33 @@ public class KafkaProduceConsumeExecutor {
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
 //        consumer.subscribe(Collections.singletonList(topic));
         consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
-        //consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
-        int readCnt = 0;
+        consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
+        int readCnt = 0, turnCnt = 0;
         final AtomicBoolean running = new AtomicBoolean(true);
         LOG.info("list topics = " + consumer.listTopics());
+        boolean paused = false, resumed = false;
         while (running.get()) {
+            turnCnt++;
             try {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
                 LOG.info("==> " + records.count() + " records;");
                 readCnt += records.count();
-//                if (readCnt >= 10) {
-//                    consumer.pause(Arrays.asList(new TopicPartition("tt",
-//                                                                    0)));
-//                    LOG.info("paused topic tt for partition 0.");
+                if (readCnt <= 10 && !paused && !resumed) {
+                    consumer.pause(Arrays.asList(new TopicPartition("tt", 0)));
+                    LOG.info("paused topic tt for partition 0.");
+                    paused = true;
+                }
+//                if (turnCnt == 5) {
+//                    consumer.resume(Arrays.asList(new TopicPartition("tt", 0)));
+//                    LOG.info("resume topic tt for partition 0.");
+//                    resumed = true;
+//                    paused = false;
 //                }
+                if (turnCnt == 5) {
+                    /*change assignment will clear the pause state of subscriptions, see source code of SubscriptionState*/
+                    consumer.subscribe(Arrays.asList(topic, "tt1", "kky", "sssa", "sa"));
+                    LOG.info("re-subscribe to change assignment.");
+                }
                 if(records.count() == 0)
                     try {
                         Thread.sleep(2000);

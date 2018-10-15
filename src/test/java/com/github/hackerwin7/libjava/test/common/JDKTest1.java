@@ -1,10 +1,7 @@
 package com.github.hackerwin7.libjava.test.common;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -28,8 +25,25 @@ public class JDKTest1 {
         }
     }
 
+    private static CloseMode mode;
+
     public static void main(String[] args) throws Exception {
-        testGetAndIncrement();
+        testOrderOfMap();
+    }
+
+    public static void testOrderOfMap() {
+        LinkedHashMap<Integer, Integer> map = new LinkedHashMap<>();
+        map.put(1,1); map.put(2,2); map.put(3,3); map.put(4,4);
+        for (Map.Entry<Integer, Integer> entry : map.entrySet())
+            System.out.println(entry);
+        Integer removed = map.remove(1);
+        map.put(1, removed);
+        for (Map.Entry<Integer, Integer> entry : map.entrySet())
+            System.out.println(entry);
+    }
+
+    public static void testEnumDefault() {
+        System.out.println(mode);
     }
 
     public static void testGetAndIncrement() {
