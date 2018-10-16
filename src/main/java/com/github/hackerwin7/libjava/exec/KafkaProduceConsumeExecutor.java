@@ -183,15 +183,16 @@ public class KafkaProduceConsumeExecutor {
         boolean paused = false, resumed = false;
         while (running.get()) {
             turnCnt++;
+            LOG.debug("poll count = " + turnCnt);
             try {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
                 LOG.info("==> " + records.count() + " records;");
                 readCnt += records.count();
-                if (readCnt <= 10 && !paused && !resumed) {
-                    consumer.pause(Arrays.asList(new TopicPartition("tt", 0)));
-                    LOG.info("paused topic tt for partition 0.");
-                    paused = true;
-                }
+//                if (readCnt <= 10 && !paused && !resumed) {
+//                    consumer.pause(Arrays.asList(new TopicPartition("tt", 0)));
+//                    LOG.info("paused topic tt for partition 0.");
+//                    paused = true;
+//                }
 //                if (turnCnt == 5) {
 //                    consumer.resume(Arrays.asList(new TopicPartition("tt", 0)));
 //                    LOG.info("resume topic tt for partition 0.");
@@ -200,7 +201,7 @@ public class KafkaProduceConsumeExecutor {
 //                }
                 if (turnCnt == 5) {
                     /*change assignment will clear the pause state of subscriptions, see source code of SubscriptionState*/
-                    consumer.subscribe(Arrays.asList(topic, "tt1", "kky", "sssa", "sa"));
+                    consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
                     LOG.info("re-subscribe to change assignment.");
                 }
                 if(records.count() == 0)
