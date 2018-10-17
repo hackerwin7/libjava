@@ -31,6 +31,9 @@ public class KafkaProduceConsumeExecutor {
     private final boolean enableConsume;
     private final boolean enableAuth;
 
+    private Producer producer;
+    private Consumer consumer;
+
     public KafkaProduceConsumeExecutor(boolean enableProduce, boolean enableConsume, boolean enableAuth) {
         this.enableProduce = enableProduce;
         this.enableConsume = enableConsume;
@@ -88,6 +91,15 @@ public class KafkaProduceConsumeExecutor {
                 }
             }
         }).start();
+
+        Thread.sleep(5 * 1000);
+
+        new Thread(() -> {
+            //other thread close the handle
+            LOG.info("Other threading close handler...");
+            if (producer != null)
+                producer.close();
+        }).start();
     }
 
     public void produce(String brokers, String topic, String clientId) throws Exception {
@@ -110,6 +122,7 @@ public class KafkaProduceConsumeExecutor {
         }
 
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
+        this.producer = producer;
         long i = 0;
         Random rand = new Random();
         int length = 64;
@@ -138,7 +151,7 @@ public class KafkaProduceConsumeExecutor {
             } catch (Exception e) {
                 LOG.error("exception: " + e.getMessage(), e);
             }
-            Thread.sleep(1000);
+//            Thread.sleep(1000);
             i++;
         }
         producer.close();
@@ -154,6 +167,15 @@ public class KafkaProduceConsumeExecutor {
                     LOG.error("exception: " + e.getMessage(), e);
                 }
             }
+        }).start();
+
+        Thread.sleep(10 * 1000);
+
+        new Thread(() -> {
+            //other thread close the handle
+            LOG.info("Other threading close handler...");
+            if (consumer != null)
+                consumer.close();
         }).start();
     }
 
@@ -174,6 +196,7 @@ public class KafkaProduceConsumeExecutor {
         }
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
+        this.consumer = consumer;
 //        consumer.subscribe(Collections.singletonList(topic));
         consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
         consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
