@@ -92,14 +92,14 @@ public class KafkaProduceConsumeExecutor {
             }
         }).start();
 
-        Thread.sleep(5 * 1000);
-
-        new Thread(() -> {
-            //other thread close the handle
-            LOG.info("Other threading close handler...");
-            if (producer != null)
-                producer.close();
-        }).start();
+//        Thread.sleep(5 * 1000);
+//
+//        new Thread(() -> {
+//            //other thread close the handle
+//            LOG.info("Other threading close handler...");
+//            if (producer != null)
+//                producer.close();
+//        }).start();
     }
 
     public void produce(String brokers, String topic, String clientId) throws Exception {
@@ -151,7 +151,7 @@ public class KafkaProduceConsumeExecutor {
             } catch (Exception e) {
                 LOG.error("exception: " + e.getMessage(), e);
             }
-//            Thread.sleep(1000);
+            Thread.sleep(1000);
             i++;
         }
         producer.close();
@@ -169,14 +169,14 @@ public class KafkaProduceConsumeExecutor {
             }
         }).start();
 
-        Thread.sleep(10 * 1000);
-
-        new Thread(() -> {
-            //other thread close the handle
-            LOG.info("Other threading close handler...");
-            if (consumer != null)
-                consumer.close();
-        }).start();
+//        Thread.sleep(10 * 1000);
+//
+//        new Thread(() -> {
+//            //other thread close the handle
+//            LOG.info("Other threading close handler...");
+//            if (consumer != null)
+//                consumer.close();
+//        }).start();
     }
 
     public void consume(String brokers, String topic, String clientid, String groupId) throws Exception {
@@ -197,8 +197,8 @@ public class KafkaProduceConsumeExecutor {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
         this.consumer = consumer;
-//        consumer.subscribe(Collections.singletonList(topic));
-        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
+        consumer.subscribe(Collections.singletonList(topic));
+//        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
         consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
         int readCnt = 0, turnCnt = 0;
         final AtomicBoolean running = new AtomicBoolean(true);
@@ -222,11 +222,11 @@ public class KafkaProduceConsumeExecutor {
 //                    resumed = true;
 //                    paused = false;
 //                }
-                if (turnCnt == 5) {
-                    /*change assignment will clear the pause state of subscriptions, see source code of SubscriptionState*/
-                    consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
-                    LOG.info("re-subscribe to change assignment.");
-                }
+//                if (turnCnt == 5) {
+//                    /*change assignment will clear the pause state of subscriptions, see source code of SubscriptionState*/
+//                    consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
+//                    LOG.info("re-subscribe to change assignment.");
+//                }
                 if(records.count() == 0)
                     try {
                         Thread.sleep(2000);
