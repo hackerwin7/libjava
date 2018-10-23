@@ -125,7 +125,7 @@ public class KafkaProduceConsumeExecutor {
         this.producer = producer;
         long i = 0;
         Random rand = new Random();
-        int length = 1024;
+        int length = 20480;
         while (i <= MAX_SEND) {
             int ilen = String.valueOf(i).length();
             long cur = System.currentTimeMillis();
