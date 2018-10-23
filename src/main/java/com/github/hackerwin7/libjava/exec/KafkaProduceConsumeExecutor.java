@@ -125,7 +125,7 @@ public class KafkaProduceConsumeExecutor {
         this.producer = producer;
         long i = 0;
         Random rand = new Random();
-        int length = 64;
+        int length = 1024;
         while (i <= MAX_SEND) {
             int ilen = String.valueOf(i).length();
             long cur = System.currentTimeMillis();
@@ -189,7 +189,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("client.id", StringUtils.isBlank(clientid) ? genId() : clientid);
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
+//        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
         if (enableAuth) {
             props.put("security.protocol", "SASL_PLAINTEXT");
             props.put("sasl.kerberos.service.name", "kafka");
@@ -202,11 +202,11 @@ public class KafkaProduceConsumeExecutor {
         consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
         int readCnt = 0, turnCnt = 0;
         final AtomicBoolean running = new AtomicBoolean(true);
-        LOG.info("list topics = " + consumer.listTopics());
+//        LOG.info("list topics = " + consumer.listTopics());
         boolean paused = false, resumed = false;
         while (running.get()) {
             turnCnt++;
-            LOG.debug("poll count = " + turnCnt);
+            LOG.debug("polling count = " + turnCnt);
             try {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
                 LOG.info("==> " + records.count() + " records;");
@@ -235,12 +235,12 @@ public class KafkaProduceConsumeExecutor {
                     }
                 else
                     for (ConsumerRecord<String, String> record : records) {
-                        LOG.info("Consumed topic = " + record.topic() + ", partition = "+ record.partition() +", offset = "+ record.offset() + ", timestamp = " + record.timestamp() +", key = "+ record.key() +", val = " + record.value());
-                        Thread.sleep(1000);
+                        LOG.debug("Consumed topic = " + record.topic() + ", partition = "+ record.partition() +", offset = "+ record.offset() + ", timestamp = " + record.timestamp() +", key = "+ record.key() +", val = " + record.value());
                     }
             } catch (Exception e) {
                 LOG.error(e.getMessage(), e);
             }
+            Thread.sleep(1000);
         }
         consumer.close();
     }

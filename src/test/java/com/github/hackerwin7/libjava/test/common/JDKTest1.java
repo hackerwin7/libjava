@@ -28,7 +28,12 @@ public class JDKTest1 {
     private static CloseMode mode;
 
     public static void main(String[] args) throws Exception {
-        testOrderOfMap();
+        testMAX();
+    }
+
+    public static void testMAX() {
+        System.out.println(Long.MAX_VALUE);
+        System.out.println(Integer.MAX_VALUE);
     }
 
     public static void testOrderOfMap() {
