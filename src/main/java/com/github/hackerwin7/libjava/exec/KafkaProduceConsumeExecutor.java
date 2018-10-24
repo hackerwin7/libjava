@@ -197,7 +197,8 @@ public class KafkaProduceConsumeExecutor {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
         this.consumer = consumer;
-        consumer.subscribe(Collections.singletonList(topic));
+        consumer.assign(Collections.singleton(new TopicPartition(topic ,0)));
+//        consumer.subscribe(Collections.singletonList(topic));
 //        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
         consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
         int readCnt = 0, turnCnt = 0;
