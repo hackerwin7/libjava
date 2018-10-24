@@ -8,6 +8,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UncheckedIOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
@@ -125,14 +126,17 @@ public class KafkaProduceConsumeExecutor {
         this.producer = producer;
         long i = 0;
         Random rand = new Random();
-        int length = 20480;
+        int length = 256;
         while (i <= MAX_SEND) {
             int ilen = String.valueOf(i).length();
             long cur = System.currentTimeMillis();
             try {
-                ProducerRecord record = new ProducerRecord<String, String>(topic,
-                                                                           "key-" + i + "-" + cur,
-                                                                           StringUtils.repeat("*", length- ilen - 1) + "-" + i);
+                @SuppressWarnings("unchecked")
+                ProducerRecord record = new ProducerRecord(topic, null, null);
+
+//                ProducerRecord record = new ProducerRecord<String, String>(topic,
+//                                                                           "key-" + i + "-" + cur,
+//                                                                           StringUtils.repeat("*", length- ilen - 1) + "-" + i);
                 LOG.info("Producing " + record);
                 // async
 //                producer.send(record, new Callback() {
