@@ -4,8 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,6 +22,7 @@ import java.io.IOException;
  * Desc:
  */
 public class Utils {
+    private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
     private static final ObjectMapper JSON = new ObjectMapper();
 
     public static JsonNode string2Json(String str) throws IOException {
@@ -31,5 +39,44 @@ public class Utils {
 
     public static ObjectNode createJsonNode() {
         return JSON.createObjectNode();
+    }
+
+    /**
+     * get current machine ip, both physical and virtual (docker , kubernetes etc.)
+     * @return ip address
+     */
+    public static String ip() {
+        try {
+            InetAddress tmp = null;
+            for (Enumeration ifaces = NetworkInterface.getNetworkInterfaces(); ifaces.hasMoreElements();) {
+                NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
+                for (Enumeration inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
+                    InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
+                    if (inetAddr instanceof Inet6Address)
+                        continue;
+                    System.out.println("inet Address = " + inetAddr);
+//                    LOG.debug("inet address = " + inetAddr);
+//                    if (!inetAddr.isLoopbackAddress()) {
+//                        if (inetAddr.isSiteLocalAddress())
+//                            return inetAddr.getHostAddress();
+//                        else if (tmp == null)
+//                            tmp = inetAddr;
+//                    }
+                }
+            }
+//            if (tmp != null)
+//                return tmp.getHostAddress();
+//            InetAddress jdkAddr = InetAddress.getLocalHost();
+//            if (jdkAddr == null)
+//                throw new UnknownHostException("jdk supplied address failed!");
+//            return jdkAddr.getHostAddress();
+        } catch (Exception e) {
+            LOG.error("failed to retrieve ip, due to: " + e.getMessage(), e);
+        }
+        return "Unknown";
+    }
+
+    public static void main(String[] args) {
+        System.out.println(ip());
     }
 }

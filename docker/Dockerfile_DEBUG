@@ -1,0 +1,23 @@
+FROM jrdw-java-base:1.8.0_152
+#FROM repo.jd.local/centos/centos:7.2
+LABEL name="juip" build-date="20181025"
+
+ADD juip.tgz /opt/juip
+#ADD juipF.tar /opt
+
+#COPY libjava-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/juip/
+#COPY entrypoint.sh /opt/juip/
+
+WORKDIR /opt/juip
+
+#CMD ["/bin/java -jar libjava-1.0-SNAPSHOT-jar-with-dependencies.jar"]
+#ENTRYPOINT ["entrypoint.sh"]
+#CMD ["entrypoint.sh"]
+#RUN ls
+
+#CMD ["/opt/juip/entrypoint.sh"]
+#CMD ["java","-jar","libjava-1.0-SNAPSHOT-jar-with-dependencies.jar"]
+#CMD start.sh
+#CMD ["java"]
+#CMD ["bin/entrypoint.sh"]
+CMD ["./start.sh"] # start.sh not exec, ./start.sh or xxx/xxx/.../start.sh is exec (such as bin/start.sh), see details in OneNote/OS/items/(shell exec)
