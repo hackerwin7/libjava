@@ -1,0 +1,38 @@
+kind: Deployment
+apiVersion: apps/v1beta1
+metadata:
+  name: juip-1028
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: juip
+      taskId: "1028"
+      version: 0.1.5
+  template:
+    metadata:
+      labels:
+        name: juip
+        taskId: "1028"
+        version: 0.1.5
+    spec:
+      #hostNetwork: true
+      containers:
+        - name: juip
+          image: repo.jd.local/jrdw/juip
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 500m
+              memory: 128Mi
+          command: ["sleep"]
+          args: ["15"]
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
