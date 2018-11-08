@@ -132,12 +132,14 @@ public class KafkaProduceConsumeExecutor {
             long cur = System.currentTimeMillis();
             try {
                 @SuppressWarnings("unchecked")
-                ProducerRecord record = new ProducerRecord(topic, null, null);
+//                ProducerRecord record = new ProducerRecord(topic, null, null);
 
-//                ProducerRecord record = new ProducerRecord<String, String>(topic,
-//                                                                           "key-" + i + "-" + cur,
-//                                                                           StringUtils.repeat("*", length- ilen - 1) + "-" + i);
-                LOG.info("Producing " + record);
+                ProducerRecord record = new ProducerRecord<String, String>(topic,
+                                                                           "key-" + i + "-" + cur,
+                                                                           StringUtils.repeat("*", length- ilen - 1) + "-" + i);
+                if (i % 10 == 0)
+                    LOG.info("Producing " + record);
+                LOG.debug("Producing " + record);
                 // async
 //                producer.send(record, new Callback() {
 //                    @Override
@@ -210,11 +212,14 @@ public class KafkaProduceConsumeExecutor {
 //        LOG.info("list topics = " + consumer.listTopics());
         boolean paused = false, resumed = false;
         while (running.get()) {
-            turnCnt++;
+
             LOG.debug("polling count = " + turnCnt);
             try {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
-                LOG.info("==> " + records.count() + " records;");
+//                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                ConsumerRecords<String, String> records = consumer.poll(1000);
+                if (turnCnt % 10 == 0)
+                    LOG.info("==> " + records.count() + " temporarily(not per turn) records;");
+                LOG.debug("==> " + records.count() + " records;");
                 readCnt += records.count();
 //                if (readCnt <= 10 && !paused && !resumed) {
 //                    consumer.pause(Arrays.asList(new TopicPartition("tt", 0)));
@@ -246,7 +251,8 @@ public class KafkaProduceConsumeExecutor {
                 LOG.error(e.getMessage(), e);
             }
             Thread.sleep(1000);
-            LOG.info("committed offset = " + consumer.committed(new Top icPartition(topic, 0)));
+            LOG.debug("committed offset = " + consumer.committed(new TopicPartition(topic, 0)));
+            turnCnt++;
         }
         consumer.close();
     }

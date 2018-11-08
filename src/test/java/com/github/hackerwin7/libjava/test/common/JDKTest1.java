@@ -28,7 +28,12 @@ public class JDKTest1 {
     private static CloseMode mode;
 
     public static void main(String[] args) throws Exception {
-        testMAX();
+        testGroupidHash();
+    }
+
+    public static void testGroupidHash() {
+        String groupId = "sharding_product_pop1530263473112";
+        System.out.println(Math.abs(groupId.hashCode()) % 50);
     }
 
     public static void testMAX() {
