@@ -246,6 +246,7 @@ public class KafkaProduceConsumeExecutor {
                 LOG.error(e.getMessage(), e);
             }
             Thread.sleep(1000);
+            LOG.info("committed offset = " + consumer.committed(new Top icPartition(topic, 0)));
         }
         consumer.close();
     }
