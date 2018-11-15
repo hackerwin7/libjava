@@ -207,6 +207,7 @@ public class KafkaProduceConsumeExecutor {
 //        consumer.subscribe(Collections.singletonList(topic));
 //        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
         consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
+        consumer.commitSync();
         int readCnt = 0, turnCnt = 0;
         final AtomicBoolean running = new AtomicBoolean(true);
 //        LOG.info("list topics = " + consumer.listTopics());
@@ -215,8 +216,8 @@ public class KafkaProduceConsumeExecutor {
 
             LOG.debug("polling count = " + turnCnt);
             try {
-//                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
-                ConsumerRecords<String, String> records = consumer.poll(1000);
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+//                ConsumerRecords<String, String> records = consumer.poll(1000);
                 if (turnCnt % 10 == 0)
                     LOG.info("==> " + records.count() + " temporarily(not per turn) records;");
                 LOG.debug("==> " + records.count() + " records;");
