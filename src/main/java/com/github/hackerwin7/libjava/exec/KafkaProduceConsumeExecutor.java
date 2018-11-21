@@ -126,7 +126,7 @@ public class KafkaProduceConsumeExecutor {
         this.producer = producer;
         long i = 0;
         Random rand = new Random();
-        int length = 256;
+        int length = 10240;
         while (i <= MAX_SEND) {
             int ilen = String.valueOf(i).length();
             long cur = System.currentTimeMillis();
@@ -206,7 +206,8 @@ public class KafkaProduceConsumeExecutor {
         consumer.assign(Collections.singleton(new TopicPartition(topic ,0)));
 //        consumer.subscribe(Collections.singletonList(topic));
 //        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
-        consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
+//        consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
+//        consumer.seek(new TopicPartition(topic, 0), 537);
         consumer.commitSync();
         int readCnt = 0, turnCnt = 0;
         final AtomicBoolean running = new AtomicBoolean(true);
