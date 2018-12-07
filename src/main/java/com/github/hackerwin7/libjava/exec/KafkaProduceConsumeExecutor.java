@@ -203,16 +203,18 @@ public class KafkaProduceConsumeExecutor {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
         this.consumer = consumer;
-        consumer.assign(Collections.singleton(new TopicPartition(topic ,0)));
-//        consumer.subscribe(Collections.singletonList(topic));
+//        consumer.assign(Collections.singleton(new TopicPartition(topic ,0)));
+        consumer.subscribe(Collections.singletonList(topic));
 //        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
 //        consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
 //        consumer.seek(new TopicPartition(topic, 0), 537);
-        consumer.commitSync();
+        //call poll to join and then to commit
+//        consumer.commitSync(Collections.singletonMap(new TopicPartition(topic, 0), new OffsetAndMetadata(137)));
         int readCnt = 0, turnCnt = 0;
         final AtomicBoolean running = new AtomicBoolean(true);
 //        LOG.info("list topics = " + consumer.listTopics());
         boolean paused = false, resumed = false;
+
         while (running.get()) {
 
             LOG.debug("polling count = " + turnCnt);
@@ -255,7 +257,15 @@ public class KafkaProduceConsumeExecutor {
             Thread.sleep(1000);
             LOG.debug("committed offset = " + consumer.committed(new TopicPartition(topic, 0)));
             turnCnt++;
+
+            //DEBUG special
+            if (turnCnt % 10 == 0) {
+                LOG.info("try to commit");
+                consumer.commitSync(Collections.singletonMap(new TopicPartition(topic, 0), new OffsetAndMetadata(137)));
+                LOG.info("try to get committed offset = " + consumer.committed(new TopicPartition(topic, 0)));
+            }
         }
+        LOG.info("closing consumer...");
         consumer.close();
     }
 
