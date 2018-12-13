@@ -14,7 +14,7 @@ import java.util.HashMap;
  * Time: 3:49 PM
  * Desc:
  */
-public class Tester {
+public class CommonExec {
     public static void main(String[] args) throws Exception {
         inetAddrTest("wenyuhe.jdq.jd.local", 9888);
     }
