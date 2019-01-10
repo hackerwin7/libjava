@@ -12,14 +12,28 @@ import java.util.Map;
  */
 public class JDKTest {
     public static void main(String[] args) {
+        conversion();
+    }
 
+    public static void conversion() {
+        byte b = 10; // -128 ~ 127
+        int a = 10;
+        int c = 1000;
+        b = (byte) a;
+        System.out.println(b);
+        b = (byte) c;
+        System.out.println(b);
+    }
+
+    public static void javaRuntime() {
+        System.out.println(System.getProperty("java.specification.version"));
     }
 
     /**
      * LRU test demo for map
      */
     public static void LRU() {
-        Map<Long, String> lru = new LinkedHashMap<>();
-        lru.forEach();
+//        Map<Long, String> lru = new LinkedHashMap<>();
+//        lru.forEach();
     }
 }

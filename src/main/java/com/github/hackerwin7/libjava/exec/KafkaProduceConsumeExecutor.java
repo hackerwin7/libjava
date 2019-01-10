@@ -126,7 +126,7 @@ public class KafkaProduceConsumeExecutor {
         this.producer = producer;
         long i = 0;
         Random rand = new Random();
-        int length = 10240;
+        int length = 1024;
         while (i <= MAX_SEND) {
             int ilen = String.valueOf(i).length();
             long cur = System.currentTimeMillis();
@@ -219,8 +219,8 @@ public class KafkaProduceConsumeExecutor {
 
             LOG.debug("polling count = " + turnCnt);
             try {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
-//                ConsumerRecords<String, String> records = consumer.poll(1000);
+//                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                ConsumerRecords<String, String> records = consumer.poll(1000);
                 if (turnCnt % 10 == 0)
                     LOG.info("==> " + records.count() + " temporarily(not per turn) records;");
                 LOG.debug("==> " + records.count() + " records;");
@@ -259,11 +259,11 @@ public class KafkaProduceConsumeExecutor {
             turnCnt++;
 
             //DEBUG special
-            if (turnCnt % 10 == 0) {
-                LOG.info("try to commit");
-                consumer.commitSync(Collections.singletonMap(new TopicPartition(topic, 0), new OffsetAndMetadata(137)));
-                LOG.info("try to get committed offset = " + consumer.committed(new TopicPartition(topic, 0)));
-            }
+//            if (turnCnt % 10 == 0) {
+//                LOG.info("try to commit");
+//                consumer.commitSync(Collections.singletonMap(new TopicPartition(topic, 0), new OffsetAndMetadata(137)));
+//                LOG.info("try to get committed offset = " + consumer.committed(new TopicPartition(topic, 0)));
+//            }
         }
         LOG.info("closing consumer...");
         consumer.close();
