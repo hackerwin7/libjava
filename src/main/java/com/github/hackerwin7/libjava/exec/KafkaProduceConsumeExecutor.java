@@ -109,7 +109,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("batch.size", 16384);
         props.put("linger.ms", 1);
         props.put("buffer.memory", 33554432);
-//        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("client.id", StringUtils.isBlank(clientId) ? genId() : clientId);
@@ -195,6 +195,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("client.id", StringUtils.isBlank(clientid) ? genId() : clientid);
+        props.put(ConsumerConfig.CHECK_CRCS_CONFIG, "false");
 //        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
         if (enableAuth) {
             props.put("security.protocol", "SASL_PLAINTEXT");
@@ -205,9 +206,10 @@ public class KafkaProduceConsumeExecutor {
         this.consumer = consumer;
 //        consumer.assign(Collections.singleton(new TopicPartition(topic ,0)));
         consumer.subscribe(Collections.singletonList(topic));
+        consumer.poll(1000); // need this, before seek
 //        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
 //        consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
-//        consumer.seek(new TopicPartition(topic, 0), 537);
+        consumer.seek(new TopicPartition(topic, 0), 380);
         //call poll to join and then to commit
 //        consumer.commitSync(Collections.singletonMap(new TopicPartition(topic, 0), new OffsetAndMetadata(137)));
         int readCnt = 0, turnCnt = 0;
