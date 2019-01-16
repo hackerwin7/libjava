@@ -2,14 +2,18 @@ package com.github.hackerwin7.libjava.exec;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Properties;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -19,9 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Time: 10:44 AM
  * Desc:
  */
-public class KafkaProduceConsumeExecutor {
+public class JDQProduceConsumeExecutor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaProduceConsumeExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JDQProduceConsumeExecutor.class);
     private static final Long MAX_SEND = 1000000L;
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -33,13 +37,13 @@ public class KafkaProduceConsumeExecutor {
     private Producer producer;
     private Consumer consumer;
 
-    public KafkaProduceConsumeExecutor(boolean enableProduce, boolean enableConsume, boolean enableAuth) {
+    public JDQProduceConsumeExecutor(boolean enableProduce, boolean enableConsume, boolean enableAuth) {
         this.enableProduce = enableProduce;
         this.enableConsume = enableConsume;
         this.enableAuth = enableAuth;
     }
 
-    public KafkaProduceConsumeExecutor() {
+    public JDQProduceConsumeExecutor() {
         this(true, true, false);
     }
 
@@ -64,7 +68,7 @@ public class KafkaProduceConsumeExecutor {
                 brokers = args[0];
             case 0:
         }
-        KafkaProduceConsumeExecutor executor = new KafkaProduceConsumeExecutor(enableProduce, enableConsume, enableAuth);
+        JDQProduceConsumeExecutor executor = new JDQProduceConsumeExecutor(enableProduce, enableConsume, enableAuth);
         executor.run(brokers, topic, clientId, groupId);
     }
 
@@ -109,7 +113,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("batch.size", 16384);
         props.put("linger.ms", 1);
         props.put("buffer.memory", 33554432);
-//        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+//        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("client.id", StringUtils.isBlank(clientId) ? genId() : clientId);
@@ -134,8 +138,7 @@ public class KafkaProduceConsumeExecutor {
 //                ProducerRecord record = new ProducerRecord(topic, null, null);
 
                 ProducerRecord record = new ProducerRecord<String, String>(topic,
-//                                                                           "key-" + i + "-" + cur,
-                                                                           null,
+                                                                           "key-" + i + "-" + cur,
                                                                            StringUtils.repeat("*", length- ilen - 1) + "-" + i);
                 if (i % 10 == 0)
                     LOG.info("Producing " + record);
