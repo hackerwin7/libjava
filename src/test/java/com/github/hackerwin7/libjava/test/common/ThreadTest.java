@@ -28,13 +28,13 @@ public class ThreadTest {
 
         Thread th1 = new Thread(() -> {
             // must begin from 1
-            while (n.get() != 1) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            while (n.get() != 1) {
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             while (n.get() < N) { // another thread have enter the sync and output the N if <= N will output N + 1
                 synchronized (lock) {
                     while (signal.get()) {
@@ -54,13 +54,13 @@ public class ThreadTest {
 
         Thread th2 = new Thread(() -> {
             // must begin from 2
-            while (n.get() != 2) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            while (n.get() != 2) {
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             while (n.get() < N) {
                 synchronized (lock) {
                     while (!signal.get()) {
