@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -15,7 +16,70 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class ThreadTest {
     public static void main(String[] args) throws Exception {
-        interLeavingOutput3();
+        interLeavingOutput4();
+    }
+
+    public static void interLeavingOutput4() {
+        final int N = 20;
+        final AtomicInteger n = new AtomicInteger(1);
+        final AtomicReference<Boolean> signal = new AtomicReference<>(false);
+        final AtomicReference<Boolean> beginBlock = new AtomicReference<>(false);
+        Object lock = new Object();
+
+        Thread th1 = new Thread(() -> {
+            // must begin from 1
+            while (n.get() != 1) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            while (n.get() < N) { // another thread have enter the sync and output the N if <= N will output N + 1
+                synchronized (lock) {
+                    while (signal.get()) {
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println("th1:" + n.get());
+                    n.incrementAndGet();
+                    signal.set(true);
+                    lock.notify();
+                }
+            }
+        });
+
+        Thread th2 = new Thread(() -> {
+            // must begin from 2
+            while (n.get() != 2) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            while (n.get() < N) {
+                synchronized (lock) {
+                    while (!signal.get()) {
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println("th2:" + n.get());
+                    n.incrementAndGet();
+                    signal.set(false);
+                    lock.notify();
+                }
+            }
+        });
+
+        th1.start();
+        th2.start();
     }
 
     public static void interLeavingOutput3() {
