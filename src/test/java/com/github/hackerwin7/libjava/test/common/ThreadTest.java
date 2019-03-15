@@ -16,7 +16,45 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class ThreadTest {
     public static void main(String[] args) throws Exception {
-        interLeavingOutput4();
+        deadLockProgram();
+    }
+
+    public static void deadLockProgram() {
+        Object resourceA = new Object();
+        Object resourceB = new Object();
+        Thread lockingAFirst = new Thread(new DeadlockRunnable(resourceA, resourceB));
+        Thread lockingBFirst = new Thread(new DeadlockRunnable(resourceB, resourceA));
+        lockingAFirst.start();
+        lockingBFirst.start();
+    }
+
+    private static class DeadlockRunnable implements Runnable {
+        private final Object firstResource;
+        private final Object secondResource;
+
+        public DeadlockRunnable(Object firstResource, Object secondResource) {
+            this.firstResource = firstResource;
+            this.secondResource = secondResource;
+        }
+
+        @Override
+        public void run() {
+            try {
+                synchronized (firstResource) {
+                    printLockedResource(firstResource);
+                    Thread.sleep(1000);
+                    synchronized (secondResource) {
+                        printLockedResource(secondResource);
+                    }
+                }
+            } catch (InterruptedException e) {
+                System.out.println("Exception occurred: " + e);
+            }
+        }
+
+        private static void printLockedResource(Object resource) {
+            System.out.println(Thread.currentThread().getName() + ": lock resource -> " + resource);
+        }
     }
 
     public static void interLeavingOutput4() {
