@@ -42,7 +42,9 @@ public class KStreamDemo {
                 .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("count-store"));
         wordCounts.toStream().to("WordsWithCountsTopic", Produced.with(Serdes.String(), Serdes.Long()));
 
-        KafkaStreams streams = new KafkaStreams(builder.build(), props);
-        streams.start();
+        System.out.println(builder.build().describe());
+
+//        KafkaStreams streams = new KafkaStreams(builder.build(), props);
+//        streams.start();
     }
 }
