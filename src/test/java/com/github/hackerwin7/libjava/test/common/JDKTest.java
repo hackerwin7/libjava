@@ -4,6 +4,7 @@ package com.github.hackerwin7.libjava.test.common;
 import org.apache.kafka.common.utils.Crc32;
 //import org.apache.kafka.common.utils.Crc32C;
 
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.Checksum;
@@ -24,8 +25,15 @@ public class JDKTest {
     }
 
     public static void main(String[] args) {
-        Crc32();
-//        Crc32C();
+        testUnicodeLen();
+    }
+
+    public static void testUnicodeLen() {
+        System.out.println("韩浩宇今天吃饭了吗".length());
+    }
+
+    public static void testPath() {
+        System.out.println(Paths.get("/cur1/cur2/ss", "51", "t2"));
     }
 
 
