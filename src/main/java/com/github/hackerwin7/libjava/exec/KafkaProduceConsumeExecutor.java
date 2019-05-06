@@ -197,6 +197,7 @@ public class KafkaProduceConsumeExecutor {
         props.put("client.id", StringUtils.isBlank(clientid) ? genId() : clientid);
         props.put(ConsumerConfig.CHECK_CRCS_CONFIG, "false");
 //        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 5000);
         if (enableAuth) {
             props.put("security.protocol", "SASL_PLAINTEXT");
             props.put("sasl.kerberos.service.name", "kafka");
@@ -223,6 +224,8 @@ public class KafkaProduceConsumeExecutor {
             try {
 //                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
                 ConsumerRecords<String, String> records = consumer.poll(1000);
+                if (turnCnt > 3)
+                    Thread.sleep(6000);
                 if (turnCnt % 10 == 0)
                     LOG.info("==> " + records.count() + " temporarily(not per turn) records;");
                 LOG.debug("==> " + records.count() + " records;");

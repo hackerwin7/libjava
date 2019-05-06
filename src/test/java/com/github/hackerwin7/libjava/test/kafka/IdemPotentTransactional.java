@@ -25,7 +25,7 @@ public class IdemPotentTransactional {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.CLIENT_ID_CONFIG, "eos-p");
-        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+//        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         for (int i = 0; i < 100; i++) {
             producer.send(new ProducerRecord<>("eos", "key-" + Integer.toString(i), "val-" + Integer.toString(i)));
