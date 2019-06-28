@@ -195,9 +195,9 @@ public class KafkaProduceConsumeExecutor {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("client.id", StringUtils.isBlank(clientid) ? genId() : clientid);
-        props.put(ConsumerConfig.CHECK_CRCS_CONFIG, "false");
+//        props.put(ConsumerConfig.CHECK_CRCS_CONFIG, "false");
 //        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 5000);
+//        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 5000);
         if (enableAuth) {
             props.put("security.protocol", "SASL_PLAINTEXT");
             props.put("sasl.kerberos.service.name", "kafka");
@@ -210,7 +210,7 @@ public class KafkaProduceConsumeExecutor {
         consumer.poll(1000); // need this, before seek
 //        consumer.subscribe(Arrays.asList(topic, "tt1", "kky"));
 //        consumer.seekToEnd(new LinkedList<TopicPartition>()); // default empty args
-        consumer.seek(new TopicPartition(topic, 0), 380);
+        consumer.seek(new TopicPartition(topic, 0), 1212770185);
         //call poll to join and then to commit
 //        consumer.commitSync(Collections.singletonMap(new TopicPartition(topic, 0), new OffsetAndMetadata(137)));
         int readCnt = 0, turnCnt = 0;
