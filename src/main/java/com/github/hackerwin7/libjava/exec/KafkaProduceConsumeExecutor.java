@@ -1,5 +1,7 @@
 package com.github.hackerwin7.libjava.exec;
 
+import co.elastic.apm.api.ElasticApm;
+import co.elastic.apm.api.Transaction;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.*;
@@ -129,9 +131,13 @@ public class KafkaProduceConsumeExecutor {
         while (i <= MAX_SEND) {
             int ilen = String.valueOf(i).length();
             long cur = System.currentTimeMillis();
+            Transaction apmTransaction = ElasticApm.startTransaction();
             try {
-                @SuppressWarnings("unchecked")
+//                @SuppressWarnings("unchecked")
 //                ProducerRecord record = new ProducerRecord(topic, null, null);
+
+                apmTransaction.setName("producing-" + i);
+                apmTransaction.setType("produce");
 
                 ProducerRecord record = new ProducerRecord<String, String>(topic,
 //                                                                           "key-" + i + "-" + cur,
@@ -156,6 +162,9 @@ public class KafkaProduceConsumeExecutor {
                 })).get();
             } catch (Exception e) {
                 LOG.error("exception: " + e.getMessage(), e);
+                apmTransaction.captureException(e);
+            } finally {
+                apmTransaction.end();
             }
             Thread.sleep(1000);
             i++;
@@ -221,13 +230,19 @@ public class KafkaProduceConsumeExecutor {
         while (running.get()) {
 
             LOG.debug("polling count = " + turnCnt);
+
+            Transaction apmTransaction = ElasticApm.startTransaction();
+
             try {
+
+                apmTransaction.setName("consuming-" + turnCnt);
+                apmTransaction.setType("consumer");
 //                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
                 ConsumerRecords<String, String> records = consumer.poll(1000);
-                if (turnCnt > 3)
-                    Thread.sleep(6000);
+//                if (turnCnt > 3)
+//                    Thread.sleep(6000);
                 if (turnCnt % 10 == 0)
-                    LOG.info("==> " + records.count() + " temporarily(not per turn) records;");
+                    LOG.info("==> " + records.count() + " temporarily(not per turn, per 10 turn) records;");
                 LOG.debug("==> " + records.count() + " records;");
                 readCnt += records.count();
 //                if (readCnt <= 10 && !paused && !resumed) {
@@ -258,6 +273,9 @@ public class KafkaProduceConsumeExecutor {
                     }
             } catch (Exception e) {
                 LOG.error(e.getMessage(), e);
+                apmTransaction.captureException(e);
+            } finally {
+                apmTransaction.end();
             }
             Thread.sleep(1000);
             LOG.debug("committed offset = " + consumer.committed(new TopicPartition(topic, 0)));
