@@ -25,9 +25,22 @@
             <releases><enabled>true</enabled></releases>
             <snapshots><enabled>false</enabled></snapshots>
         </repository>
+<!--        <repository>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--            <id>central</id>-->
+<!--            <name>bintray</name>-->
+<!--            <url>http://dl.bintray.com/crate/crate</url>-->
+<!--        </repository>-->
     </repositories>
 
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>io.crate</groupId>-->
+<!--            <artifactId>crate-jdbc</artifactId>-->
+<!--            <version>2.6.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -161,7 +174,8 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.hackerwin7.libjava.common.Utils</mainClass>
+<!--                            <mainClass>com.github.hackerwin7.libjava.common.Utils</mainClass>-->
+                            <mainClass>com.github.hackerwin7.libjava.exec.CrateDBExec</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
