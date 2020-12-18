@@ -33,9 +33,36 @@
 <!--            <name>bintray</name>-->
 <!--            <url>http://dl.bintray.com/crate/crate</url>-->
 <!--        </repository>-->
+        <repository>
+            <id>bytedance-release</id>
+            <name>bytedance private repo release</name>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <url>https://maven.byted.org/repository/releases</url>
+        </repository>
+        <repository>
+            <id>bytedance-snapshot</id>
+            <name>bytedance private repo snapshot</name>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <url>https://maven.byted.org/repository/snapshots</url>
+        </repository>
     </repositories>
 
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>com.bytedance</groupId>-->
+<!--            <artifactId>elasticloader</artifactId>-->
+<!--            <version>6.8.6-SNAPSHOT</version>-->
+<!--        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>io.crate</groupId>-->
 <!--            <artifactId>crate-jdbc</artifactId>-->
@@ -183,7 +210,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
