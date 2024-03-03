@@ -6,7 +6,7 @@ package com.github.hackerwin7.libjava.cases;
  **/
 public interface Shape {
     /**
-     *  painting
+     *  painting test for cases
      */
     default void draw() {
         System.out.println("Shape");
