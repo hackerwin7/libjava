@@ -16,7 +16,14 @@ import java.util.HashMap;
  */
 public class CommonExec {
     public static void main(String[] args) throws Exception {
-        inetAddrTest("wenyuhe.jdq.jd.local", 9888);
+//        inetAddrTest("wenyuhe.jdq.jd.local", 9888);
+        stringTest();
+    }
+
+    public static void stringTest() {
+        String s = "ssr";
+        String s1 = s.replaceAll("", "#");
+        System.out.println(s1);
     }
 
     public static void httpTest() throws Exception {
