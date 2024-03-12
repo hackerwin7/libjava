@@ -3,6 +3,7 @@ package com.github.hackerwin7.libjava.exec;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.hackerwin7.libjava.common.Utils;
 import com.github.hackerwin7.libjava.http.HttpExecutor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -15,9 +16,69 @@ import java.util.HashMap;
  * Desc:
  */
 public class CommonExec {
+
+    private static final String ARRAY_STRING = "array";
+    private static final String MAP_STRING = "map";
+    private static final String COLLECTION_LEFT_BRACKET = "<";
+    private static final String COLLECTION_RIGHT_BRACKET = ">";
+    private static final String COMMA_STRING = ",";
+
+
     public static void main(String[] args) throws Exception {
-//        inetAddrTest("wenyuhe.jdq.jd.local", 9888);
-        stringTest();
+        stringTest2();
+    }
+
+    public static void stringTest2() {
+        System.out.println(getElementOdpsType("array<int>"));
+        System.out.println(getElementOdpsType("array<array<string>>"));
+        System.out.println(getElementKeyOdpsType("Map<string, int>"));
+        System.out.println(getElementValOdpsType("Map<string, int>"));
+        System.out.println(getElementKeyOdpsType("Map<map<int, string>, map<string,string>>"));
+        System.out.println(getElementValOdpsType("Map<map<int, string>, map<string,string>>"));
+    }
+
+
+    public static String getElementOdpsType(String odpsType) {
+        if (StringUtils.startsWithIgnoreCase(odpsType, ARRAY_STRING)) {
+            return odpsType.substring(odpsType.indexOf(COLLECTION_LEFT_BRACKET) + 1, odpsType.lastIndexOf(COLLECTION_RIGHT_BRACKET));
+        } else {
+            return odpsType;
+        }
+    }
+
+    public static String getElementKeyOdpsType(String odpsType) {
+        // recursion not supported
+        if (StringUtils.startsWithIgnoreCase(odpsType, MAP_STRING)) {
+            return odpsType.substring(odpsType.indexOf(COLLECTION_LEFT_BRACKET) + 1, odpsType.indexOf(COMMA_STRING)).trim();
+        } else {
+            return odpsType;
+        }
+    }
+
+    public static String getElementValOdpsType(String odpsType) {
+        // recursion not supported
+        if (StringUtils.startsWithIgnoreCase(odpsType, MAP_STRING)) {
+            return odpsType.substring(odpsType.indexOf(COMMA_STRING) + 1, odpsType.lastIndexOf(COLLECTION_RIGHT_BRACKET)).trim();
+        } else {
+            return odpsType;
+        }
+    }
+
+    public static void stringTest1() {
+//        String engineType = "map<int, string>";
+        String engineType = "map<map<int, string>, map<string, int>>";
+        String[] split = StringUtils.split(StringUtils
+            .substring(engineType, "map".length() + 1, engineType.length() - 1), ",", 2);
+
+        String keyType = trim(split[0]);
+        String valueType = trim(split[1]);
+
+        System.out.println(keyType);
+        System.out.println(valueType);
+    }
+
+    public static String trim(String typeName) {
+        return StringUtils.replace(StringUtils.trim(typeName), " ", "");
     }
 
     public static void stringTest() {
