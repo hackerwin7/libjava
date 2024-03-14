@@ -171,6 +171,22 @@
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
             <version>7.5.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -202,7 +218,8 @@
                     <archive>
                         <manifest>
 <!--                            <mainClass>com.github.hackerwin7.libjava.common.Utils</mainClass>-->
-                            <mainClass>com.github.hackerwin7.libjava.exec.CrateDBExec</mainClass>
+<!--                            <mainClass>com.github.hackerwin7.libjava.exec.CrateDBExec</mainClass>-->
+                            <mainClass>com.github.hackerwin7.libjava.exec.Kafka20ProducerExec</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
