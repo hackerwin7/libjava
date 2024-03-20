@@ -1,15 +1,17 @@
 package com.github.hackerwin7.libjava.exec;
 
+import com.alibaba.fastjson2.JSON;
+import com.github.hackerwin7.libjava.common.Utils;
 import com.github.javafaker.Faker;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
@@ -26,16 +28,31 @@ import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_
 @Slf4j
 public class Kafka20ProducerExec extends Thread {
 
-  private static final int ARGS_COUNT = 3;
+  private static final int ARGS_COUNT = 4;
 
   private final String bootstrapServers;
   private final String topic;
   private final int numRecords;
+  private final FormatType formatType;
+  private final Map<String, String> fields;
 
-  public Kafka20ProducerExec(String bootstrapServers, String topic, int numProduced) {
+  enum FormatType {
+    /**
+     * json
+     */
+    JSON,
+    /**
+     * csv
+     */
+    CSV
+  }
+
+  public Kafka20ProducerExec(String bootstrapServers, String topic, String formatType, int numProduced) {
     this.bootstrapServers = bootstrapServers;
     this.topic = topic;
     this.numRecords = numProduced;
+    this.formatType = FormatType.valueOf(formatType.toUpperCase());
+    this.fields = Maps.newHashMap();
   }
 
   /**
@@ -65,7 +82,18 @@ public class Kafka20ProducerExec extends Thread {
 
   private String generateValue(Random random) {
     Faker faker = new Faker();
-    return StringUtils.join(Arrays.asList(faker.idNumber().valid(), faker.name().fullName(), random.nextDouble()), "|");
+    if (formatType == FormatType.JSON) {
+      fields.clear();
+      fields.put("id", String.valueOf(Math.abs(random.nextInt())));
+      fields.put("name", faker.name().firstName());
+      fields.put("address", faker.address().fullAddress());
+      fields.put("price", String.valueOf(random.nextDouble()));
+      return JSON.toJSONString(fields);
+    }
+    if (formatType == FormatType.CSV) {
+      return StringUtils.join(Arrays.asList(Math.abs(random.nextInt()), faker.name().fullName(), random.nextDouble()), "|");
+    }
+    return "default";
   }
 
   private String generateKey(Random random) {
@@ -87,18 +115,22 @@ public class Kafka20ProducerExec extends Thread {
 
   public static void main(String[] args) {
     if (args.length != ARGS_COUNT) {
-      System.out.println("Usage: Kafka20ProducerExec <bootstrap_servers> <topic> <num_records>");
+      System.out.println("Usage: Kafka20ProducerExec <bootstrap_servers> <topic> <format_type:json|csv> <num_records>");
       System.exit(1);
     }
     String bootstrapServers = args[0];
     String topic = args[1];
-    int numRecords = Integer.parseInt(args[2]);
-    Kafka20ProducerExec producerExec = new Kafka20ProducerExec(bootstrapServers, topic, numRecords);
+    String formatType = args[2];
+    int numRecords = Integer.parseInt(args[3]);
+    Kafka20ProducerExec producerExec = new Kafka20ProducerExec(bootstrapServers, topic, formatType, numRecords);
     producerExec.start();
+
+//    test1();
   }
 
   public static void test1() {
-    Kafka20ProducerExec producerExec = new Kafka20ProducerExec("kafka-cnngue0c2fawaqrk.kafka.ivolces.com:9092", "csv_test", 10000);
+    Kafka20ProducerExec producerExec = new Kafka20ProducerExec("kafka-cnngue0c2fawaqrk.kafka.ivolces.com:9092",
+        "csv_test", "json", 10000);
     Random random = new Random(System.currentTimeMillis());
     log.info(producerExec.generateKey(random));
     log.info(producerExec.generateKey(random));
