@@ -1,5 +1,6 @@
 package com.github.hackerwin7.libjava.test.common;
 
+import com.github.hackerwin7.libjava.utils.EscapeUtils;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +15,22 @@ import java.util.Set;
 @Slf4j
 public class StringTest {
   public static void main(String[] args) {
-    test1();
+    testEscape();
+  }
+
+  public static void testEscape() {
+    char c = ':';
+    System.out.println(String.format("%1$02X", (int) c));
+    char c1 = '%';
+    System.out.println(String.format("%1$02X", (int) c1));
+    String path1 = "/xxx/yyy/zzz:date_hour_xs_noval";
+    String path2 = "zzz:date_hour_xs_noval";
+    String ep2 = EscapeUtils.escapePathName(path2);
+    System.out.println(ep2);
+    System.out.println(EscapeUtils.escapePathName(ep2));
+    System.out.println(EscapeUtils.escapePathName(EscapeUtils.escapePathName(ep2)));
+    System.out.println(EscapeUtils.checkAndEscape(ep2));
+    System.out.println(EscapeUtils.checkAndEscape(EscapeUtils.checkAndEscape(ep2)));
   }
 
   public static void test1() {
