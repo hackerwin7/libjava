@@ -192,6 +192,11 @@
             <artifactId>fastjson</artifactId>
             <version>2.0.47</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>parquet-hadoop</artifactId>
+            <version>1.10.1-bd1.0.69.rc1</version>
+        </dependency>
     </dependencies>
 
     <build>

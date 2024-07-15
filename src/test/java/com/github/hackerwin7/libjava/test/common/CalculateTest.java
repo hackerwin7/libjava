@@ -9,7 +9,12 @@ package com.github.hackerwin7.libjava.test.common;
  */
 public class CalculateTest {
     public static void main(String[] args) {
-        xorSwap();
+        testNegativeArrayException();
+    }
+
+    private static void testNegativeArrayException() {
+        int a = -1;
+        int[] arr = new int[a];
     }
 
     private static void xorSwap() {

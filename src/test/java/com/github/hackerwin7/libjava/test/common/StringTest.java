@@ -5,7 +5,9 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,7 +17,31 @@ import java.util.Set;
 @Slf4j
 public class StringTest {
   public static void main(String[] args) {
-    testEscape();
+    testFormatNull();
+  }
+
+  public static void testFormatNull() {
+    String format = "%s|%s";
+    String left = null;
+    String right = "right";
+    System.out.println(String.format(format, left, right));
+  }
+
+  public static void bytesStr() {
+    byte[] arr = {31,37,31,39,32,33,34,37,31,39,36,35,34,30,37,31};
+    String str = new String(arr);
+    System.out.println(str);
+  }
+
+  public static void testPartitionStr() {
+    String partition = "p_date=20240527/hour=11/zone=eu";
+    List<String> partVals = new ArrayList<String>();
+    String[] parts = partition.split(",");
+    for (String part : parts) {
+      String[] kv = part.split("=");
+      partVals.add(kv[1]);
+    }
+    System.out.println(partVals);
   }
 
   public static void testEscape() {
