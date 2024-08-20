@@ -17,7 +17,13 @@ import java.util.Set;
 @Slf4j
 public class StringTest {
   public static void main(String[] args) {
-    testFormatNull();
+    testStartWith();
+  }
+
+  public static void testStartWith() {
+    String oldTopic = "mysql_stock_group_dorado_pipo_refund_shard_20240807_075126_refund_order_deduction_info_dorado_awssg_to_maliva";
+    String newTopic = "mysql_stock_group_dorado_pipo_refund_shard_20240807_075126_refund_order_deduction_info";
+    System.out.println(oldTopic.startsWith(newTopic));
   }
 
   public static void testFormatNull() {

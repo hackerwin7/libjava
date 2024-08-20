@@ -35,7 +35,7 @@ public class JdbcTest {
     dataSource.setUrl(url);
     dataSource.setUsername(username);
     dataSource.setPassword(password);
-    dataSource.setDefaultAutoCommit(true);
+    dataSource.setDefaultAutoCommit(false);
     dataSource.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource.setInitialSize(5);
     dataSource.setMaxTotal(10);
