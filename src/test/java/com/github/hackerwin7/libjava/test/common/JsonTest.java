@@ -35,16 +35,19 @@ public class JsonTest {
         "}";
     System.out.println(json);
     // convert to pure string
-    JsonNode jsonNode = JsonMapper.builder().build().readTree(json);
-    String jsonString = jsonNode.toString();
-    System.out.println(jsonString);
-    // print jsonString with escape quote
-    System.out.println(jsonString.replace("\"", "\\\""));
-    // print jsonString with escape quote and new line
-    System.out.println(jsonString.replace("\"", "\\\"")
-                                .replace("\n", "\\n")
-                                .replace("\r", "\\r"));
-    // print jsonString with escape quote and new line and tab
+//    JsonNode jsonNode = JsonMapper.builder().build().readTree(json);
+//    String jsonString = jsonNode.toString();
+//    System.out.println(jsonString);
+//    // print jsonString with escape quote
+//    System.out.println(jsonString.replace("\"", "\\\""));
+//    // print jsonString with escape quote and new line
+//    System.out.println(jsonString.replace("\"", "\\\"")
+//                                .replace("\n", "\\n")
+//                                .replace("\r", "\\r"));
+    System.out.println(json.replace("\n", "")
+        .replace("\r", "")
+        .replace(" ", "")
+        .replace("\"", "\\\""));
   }
 
   public static void test2class() throws Exception {
