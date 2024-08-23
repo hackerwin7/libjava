@@ -23,7 +23,28 @@ import java.util.List;
  **/
 public class JsonTest {
   public static void main(String[] args) throws Exception {
-    test2class();
+    testJson2LiteralString();
+  }
+
+  public static void testJson2LiteralString() throws Exception {
+    String json = "{\n" +
+        "  \"region\": \"cn\",\n" +
+        "  \"projectId\": 1,\n" +
+        "  \"dataSourceType\": \"hive\",\n" +
+        "  \"subtype\": \"internal\"\n" +
+        "}";
+    System.out.println(json);
+    // convert to pure string
+    JsonNode jsonNode = JsonMapper.builder().build().readTree(json);
+    String jsonString = jsonNode.toString();
+    System.out.println(jsonString);
+    // print jsonString with escape quote
+    System.out.println(jsonString.replace("\"", "\\\""));
+    // print jsonString with escape quote and new line
+    System.out.println(jsonString.replace("\"", "\\\"")
+                                .replace("\n", "\\n")
+                                .replace("\r", "\\r"));
+    // print jsonString with escape quote and new line and tab
   }
 
   public static void test2class() throws Exception {
