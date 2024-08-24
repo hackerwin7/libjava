@@ -48,6 +48,36 @@ public class JsonTest {
         .replace("\r", "")
         .replace(" ", "")
         .replace("\"", "\\\""));
+    String json2 = "{\n" +
+        "  \"code\": 0,\n" +
+        "  \"message\": \"success\",\n" +
+        "  \"data\": [\n" +
+        "    {\n" +
+        "      \"name\": \"default\",\n" +
+        "      \"displayName\": \"国内\"\n" +
+        "    },\n" +
+        "    {\n" +
+        "      \"name\": \"lq\",\n" +
+        "      \"displayName\": \"灵丘\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"rootCause\": null\n" +
+        "}";
+    System.out.println(json2LiteralString(json2));
+    // convert json2 string to json
+    JsonNode jsonNode = JsonMapper.builder().build().readTree(json2);
+    System.out.println(jsonNode.toString());
+    // convert json2 string to json
+    JsonObject jsonObject = new Gson().fromJson(json2, JsonObject.class);
+    System.out.println(jsonObject.toString());
+    // convert json2 string to json
+  }
+
+  public static String json2LiteralString(String s) throws Exception {
+    return s.replace("\n", "")
+        .replace("\r", "")
+        .replace(" ", "")
+        .replace("\"", "\\\"");
   }
 
   public static void test2class() throws Exception {
