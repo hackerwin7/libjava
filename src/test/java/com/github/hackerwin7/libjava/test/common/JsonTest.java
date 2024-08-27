@@ -22,7 +22,19 @@ import java.util.List;
  **/
 public class JsonTest {
   public static void main(String[] args) throws Exception {
-    testJson2LiteralString();
+    testJson2LiteralStringFromFile();
+  }
+
+  public static void testJson2LiteralStringFromFile() throws Exception {
+    // read src/test/resources/json_file all lines
+    BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/json_file"));
+    String line;
+    StringBuilder sb = new StringBuilder();
+    while ((line = reader.readLine()) != null) {
+      sb.append(line);
+    }
+    System.out.println(sb);
+    System.out.println(json2LiteralString(sb.toString()));
   }
 
   public static void testJson2LiteralString() throws Exception {
@@ -76,6 +88,7 @@ public class JsonTest {
     return s.replace("\n", "")
         .replace("\r", "")
         .replace(" ", "")
+        .replace("\\\"", "\"")
         .replace("\"", "\\\"");
   }
 
