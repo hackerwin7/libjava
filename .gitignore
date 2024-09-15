@@ -23,4 +23,4 @@ target/
 .idea/
 *.iml
 logs/
-**/token_file
+**/token_file*
