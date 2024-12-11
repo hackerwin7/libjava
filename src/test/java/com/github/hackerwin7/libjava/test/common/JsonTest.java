@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.github.hackerwin7.libjava.utils.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.Data;
@@ -22,7 +23,19 @@ import java.util.List;
  **/
 public class JsonTest {
   public static void main(String[] args) throws Exception {
-    testJson2LiteralStringFromFile();
+    testJsonUtils();
+  }
+
+  public static void testJsonUtils() throws Exception {
+    BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/json_file"));
+    String line;
+    StringBuilder sb = new StringBuilder();
+    while ((line = reader.readLine()) != null) {
+      sb.append(line);
+    }
+    System.out.println(sb);
+    JsonObject jsonObject = JsonUtils.parse(sb.toString()).getAsJsonObject();
+    System.out.println("result: " + jsonObject);
   }
 
   public static void testJson2LiteralStringFromFile() throws Exception {

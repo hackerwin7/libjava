@@ -23,7 +23,13 @@ import java.util.Set;
 @Slf4j
 public class StringTest {
   public static void main(String[] args) {
-    hexString();
+    stringFormat();
+  }
+
+  public static void stringFormat() {
+    String s = null;
+    String ret = String.format(s, "123");
+    System.out.println(ret);
   }
 
   public static void hexString() {
