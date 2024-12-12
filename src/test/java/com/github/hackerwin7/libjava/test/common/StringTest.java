@@ -23,7 +23,13 @@ import java.util.Set;
 @Slf4j
 public class StringTest {
   public static void main(String[] args) {
-    stringFormat();
+    compareDateTimeStr();
+  }
+
+  public static void compareDateTimeStr() {
+    String s1 = "2024-03-20 17:56:01";
+    String s2 = "2024-03-18 17:56:01";
+    System.out.println(s1.compareTo(s2));
   }
 
   public static void stringFormat() {
