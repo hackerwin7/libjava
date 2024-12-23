@@ -23,7 +23,7 @@ import java.util.List;
  **/
 public class JsonTest {
   public static void main(String[] args) throws Exception {
-    testJsonUtils();
+    testReadLiteraltoJson();
   }
 
   public static void testJsonUtils() throws Exception {
@@ -36,6 +36,19 @@ public class JsonTest {
     System.out.println(sb);
     JsonObject jsonObject = JsonUtils.parse(sb.toString()).getAsJsonObject();
     System.out.println("result: " + jsonObject);
+  }
+
+  public static void testReadLiteraltoJson() throws Exception {
+    BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/json_file"));
+    String line;
+    StringBuilder sb = new StringBuilder();
+    while ((line = reader.readLine()) != null) {
+      sb.append(line);
+    }
+    System.out.println(sb);
+    // string to json
+    JsonNode jsonNode = JsonMapper.builder().build().readTree(literalString2Json(sb.toString()));
+    System.out.println(jsonNode);
   }
 
   public static void testJson2LiteralStringFromFile() throws Exception {
@@ -103,6 +116,10 @@ public class JsonTest {
         .replace(" ", "")
         .replace("\\\"", "\"")
         .replace("\"", "\\\"");
+  }
+
+  public static String literalString2Json(String s) throws Exception {
+    return s.replace("\\\"", "\"");
   }
 
   public static void test2class() throws Exception {
