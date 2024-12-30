@@ -23,7 +23,13 @@ import java.util.Set;
 @Slf4j
 public class StringTest {
   public static void main(String[] args) {
-    compareDateTimeStr();
+    stringBytesTest();
+  }
+
+  public static void stringBytesTest() {
+    String s = "";
+    int bytesLen = s.getBytes().length;
+    System.out.println(bytesLen);
   }
 
   public static void compareDateTimeStr() {

@@ -1,5 +1,7 @@
 package com.github.hackerwin7.libjava.test.common;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
@@ -15,6 +17,7 @@ import lombok.Data;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +26,22 @@ import java.util.List;
  **/
 public class JsonTest {
   public static void main(String[] args) throws Exception {
-    testReadLiteraltoJson();
+    testJsonBytesSize();
+  }
+
+  public static void testJsonBytesSize() throws Exception {
+    String field1 = "xxx";
+    String filed2 = "xxx";
+    String field3 = "xxxxxxxx";
+    Long field4 = 1735357557L;
+    List<SerializerFeature> jsonFeatures = new ArrayList<>();
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("field1", field1);
+    jsonObject.put("field2", filed2);
+    jsonObject.put("field3", field3);
+    jsonObject.put("field4", field4);
+    String jsonString = JSONObject.toJSONString(jsonObject, jsonFeatures.toArray(new SerializerFeature[0]));
+    System.out.println("json string bytes size: " + jsonString.getBytes().length);
   }
 
   public static void testJsonUtils() throws Exception {
