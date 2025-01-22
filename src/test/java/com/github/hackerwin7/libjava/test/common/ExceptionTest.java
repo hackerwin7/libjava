@@ -6,7 +6,17 @@ package com.github.hackerwin7.libjava.test.common;
  **/
 public class ExceptionTest {
   public static void main(String[] args) {
-    tryResourceCatchTest();
+    catchNpeTest();
+  }
+
+  public static void catchNpeTest() {
+    try {
+      String s = null;
+      System.out.println(s.length());
+    } catch (Exception e) {
+      System.out.println("catch exception " + e.getClass().getName());
+      System.out.println(e.getMessage());
+    }
   }
 
   public static void tryResourceCatchTest() {
