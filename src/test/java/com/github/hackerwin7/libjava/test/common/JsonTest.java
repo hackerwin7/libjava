@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.github.hackerwin7.libjava.utils.JsonUtils;
@@ -19,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author : wenqi.jk
@@ -26,7 +28,13 @@ import java.util.List;
  **/
 public class JsonTest {
   public static void main(String[] args) throws Exception {
-    testJsonBytesSize();
+    mapperEmptyStr();
+  }
+
+  public static void mapperEmptyStr() throws Exception {
+    ObjectMapper objectMapper = new ObjectMapper();
+    System.out.println(objectMapper.readValue("{}", Map.class));
+    System.out.println(objectMapper.readValue("", Map.class));
   }
 
   public static void testJsonBytesSize() throws Exception {

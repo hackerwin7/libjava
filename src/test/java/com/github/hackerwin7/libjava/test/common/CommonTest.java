@@ -1,5 +1,6 @@
 package com.github.hackerwin7.libjava.test.common;
 
+import com.github.javafaker.Bool;
 import com.google.common.collect.Maps;
 import org.apache.flink.table.descriptors.DescriptorProperties;
 
@@ -13,7 +14,18 @@ import java.util.Map;
  **/
 public class CommonTest {
   public static void main(String[] args) {
-    testDescriptorProperties();
+    testBoolean();
+  }
+
+  public static void testBoolean() {
+//    Boolean b1 = null;
+    Boolean b2 = false;
+//    printBoolean(b1);
+    printBoolean(b2);
+  }
+
+  private static void printBoolean(boolean bool) {
+    System.out.println(bool);
   }
 
   public static void testDescriptorProperties() {
