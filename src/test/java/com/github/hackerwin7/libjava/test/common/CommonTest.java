@@ -14,7 +14,20 @@ import java.util.Map;
  **/
 public class CommonTest {
   public static void main(String[] args) {
-    testBoolean();
+    checkNullBoolean();
+  }
+
+  private static void checkNullBoolean() {
+    Boolean b = true;
+    System.out.println(Boolean.TRUE.equals(b));
+
+
+    Boolean b1 = null;
+    if (b1) {
+      System.out.println("b1 is true");
+    } else {
+      System.out.println("b1 is false");
+    }
   }
 
   public static void testBoolean() {

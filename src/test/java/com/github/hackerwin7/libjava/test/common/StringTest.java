@@ -23,7 +23,13 @@ import java.util.Set;
 @Slf4j
 public class StringTest {
   public static void main(String[] args) {
-    stringBytesTest();
+    nullStringPrint();
+  }
+
+  public static void nullStringPrint() {
+    String s = null;
+    System.out.println("null string: " + s);
+    System.out.println(s);
   }
 
   public static void stringBytesTest() {
@@ -31,6 +37,12 @@ public class StringTest {
     int bytesLen = s.getBytes().length;
     System.out.println(bytesLen);
   }
+
+  public static void stringVoidTest() {
+    String s = "Column [%s] with type [%s] is not supported";
+    System.out.println(String.format(s, "name1", null));
+  }
+
 
   public static void compareDateTimeStr() {
     String s1 = "2024-03-20 17:56:01";
